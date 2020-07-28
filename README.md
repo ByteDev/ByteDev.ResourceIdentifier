@@ -26,12 +26,13 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 
 Uri extension methods:
 
-- AddPath
-- AddOrModifyQueryStringParam
-- AddOrModifyQueryStringParams
-- ClearQueryString
 - QueryToDictionary
-- RemoveQueryStringParam
+- AddOrUpdateQueryParam
+- AddOrUpdateQueryParams
+- RemoveQuery
+- RemoveQueryParam
 - HasPath
 - HasQuery
 - HasFragment
+- SetPath
+- SetQuery
