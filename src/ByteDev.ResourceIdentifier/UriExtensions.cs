@@ -12,26 +12,6 @@ namespace ByteDev.ResourceIdentifier
     public static class UriExtensions
     {
         /// <summary>
-        /// Returns the Uri query string as a dictionary.
-        /// </summary>
-        /// <param name="source">Uri to perform the operation on.</param>
-        /// <returns>A dictionary of query string name value pairs.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static Dictionary<string, string> QueryToDictionary(this Uri source)
-        {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-
-            if (!source.HasQuery())
-                return new Dictionary<string, string>();
-            
-            return source.Query
-                .Substring(1)
-                .Split('&')
-                .ToDictionary(p => p.Split('=')[0], p => p.Split('=')[1]);
-        }
-
-        /// <summary>
         /// Add or update a query string parameter.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
@@ -48,18 +28,14 @@ namespace ByteDev.ResourceIdentifier
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("Key was null or empty.", nameof(key));
 
-            var uriBuilder = new UriBuilder(source);
-
-            NameValueCollection nameValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            var nameValues = UriQueryConverter.ToNameValueCollection(source.Query);
 
             if (value == null)
                 nameValues.Remove(key);
             else
                 nameValues.AddOrUpdate(key, value);
 
-            uriBuilder.Query = nameValues.ToString();
-            
-            return uriBuilder.Uri;
+            return source.SetQuery(nameValues.ToString());
         }
 
         /// <summary>
@@ -97,6 +73,61 @@ namespace ByteDev.ResourceIdentifier
         }
 
         /// <summary>
+        /// Appends the given path to any existing path in the Uri.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <param name="path">Path to append.</param>
+        /// <returns>A Uri with the appended path.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Uri AppendPath(this Uri source, string path)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (string.IsNullOrEmpty(path))
+                return source;
+
+            while (path.StartsWith("/"))
+                path = path.Substring(1);
+
+            if (source.AbsolutePath.EndsWith("/"))
+                return source.SetPath(source.AbsolutePath + path);
+
+            return source.SetPath(source.AbsolutePath + "/" + path);
+        }
+
+        /// <summary>
+        /// Returns the Uri query string as a dictionary.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <returns>A dictionary of query string name value pairs.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Dictionary<string, string> QueryToDictionary(this Uri source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (!source.HasQuery())
+                return new Dictionary<string, string>();
+            
+            return source.Query
+                .Substring(1)
+                .Split('&')
+                .ToDictionary(p => p.Split('=')[0], p => p.Split('=')[1]);
+        }
+
+        /// <summary>
+        /// Removes any query from the Uri.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <returns>Uri with no query string.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Uri RemoveQuery(this Uri source)
+        {
+            return UriSetExtensions.SetQuery(source, string.Empty);
+        }
+
+        /// <summary>
         /// Remove query string parameter.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
@@ -120,17 +151,6 @@ namespace ByteDev.ResourceIdentifier
             uriBuilder.Query = nameValues.ToString();
 
             return uriBuilder.Uri;
-        }
-
-        /// <summary>
-        /// Removes any query from the Uri.
-        /// </summary>
-        /// <param name="source">Uri to perform the operation on.</param>
-        /// <returns>Uri with no query string.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static Uri RemoveQuery(this Uri source)
-        {
-            return UriSetExtensions.SetQuery(source, string.Empty);
         }
     }
 }

@@ -87,5 +87,36 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/newpath?name=value#fragment")));
             }
         }
+
+        [TestFixture]
+        public class SetFragment
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriSetExtensions.SetFragment(null, "fragment"));
+            }
+
+            [TestCase(null)]
+            [TestCase("")]
+            public void WhenFragmentIsNullOrEmpty_ThenRemovePath(string path)
+            {
+                var sut = new Uri("http://localhost/path?name=value#someFragment");
+
+                var result = sut.SetFragment(path);
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/path?name=value")));
+            }
+
+            [Test]
+            public void WhenPathValid_ThenSetPath()
+            {
+                var sut = new Uri("http://localhost/path?name=value#fragment");
+
+                var result = sut.SetFragment("newfrag");
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/path?name=value#newfrag")));
+            }
+        }
     }
 }

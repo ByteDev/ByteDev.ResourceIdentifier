@@ -26,9 +26,10 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 
 Uri extension methods:
 
-- QueryToDictionary
 - AddOrUpdateQueryParam
 - AddOrUpdateQueryParams
+- AppendPath
+- QueryToDictionary
 - RemoveQuery
 - RemoveQueryParam
 - HasPath
@@ -36,3 +37,8 @@ Uri extension methods:
 - HasFragment
 - SetPath
 - SetQuery
+
+UriQueryConverter class methods:
+
+- ToString
+- ToNameValueCollection

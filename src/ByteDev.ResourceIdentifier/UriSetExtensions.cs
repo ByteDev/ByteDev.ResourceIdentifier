@@ -21,7 +21,7 @@ namespace ByteDev.ResourceIdentifier
 
             var uriBuilder = new UriBuilder(source)
             {
-                Path = path
+                Path = path,
             };
 
             return uriBuilder.Uri;
@@ -42,6 +42,26 @@ namespace ByteDev.ResourceIdentifier
             var uriBuilder = new UriBuilder(source)
             {
                 Query = query
+            };
+
+            return uriBuilder.Uri;
+        }
+
+        /// <summary>
+        /// Returns a new Uri with the fragment set.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <param name="fragment">Fragment value to set.</param>
+        /// <returns>New Uri instance with the fragment set.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Uri SetFragment(this Uri source, string fragment)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            var uriBuilder = new UriBuilder(source)
+            {
+                Fragment = fragment
             };
 
             return uriBuilder.Uri;

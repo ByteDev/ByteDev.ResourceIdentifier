@@ -10,6 +10,79 @@ namespace ByteDev.ResourceIdentifier.UnitTests
     public class UriExtensionsTests
     {
         [TestFixture]
+        public class AppendPath
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.AppendPath(null, "path"));
+            }
+
+            [TestCase(null)]
+            [TestCase("")]
+            public void WhenPathIsNullOrEmpty_ThenReturnSameUri(string path)
+            {
+                var sut = new Uri("http://local/myapp");
+
+                var result = sut.AppendPath(path);
+
+                Assert.That(sut, Is.SameAs(result));
+            }
+
+            [TestCase("path")]
+            [TestCase("path/")]
+            [TestCase("path/path2")]
+            [TestCase("path/path2/")]
+            public void WhenHasNoPath_ThenAppendPath(string path)
+            {
+                var sut = new Uri("http://local/");
+
+                var result = sut.AppendPath(path);
+                
+                Assert.That(result, Is.EqualTo(new Uri("http://local/" + path)));
+            }
+
+            [TestCase("/path")]
+            [TestCase("/path/")]
+            [TestCase("/path/path2")]
+            [TestCase("/path/path2/")]
+            public void WhenHasNoPath_AndStartsWithSlash_ThenAppendPath(string path)
+            {
+                var sut = new Uri("http://local/");
+
+                var result = sut.AppendPath(path);
+                
+                Assert.That(result, Is.EqualTo(new Uri("http://local" + path)));
+            }
+
+            [TestCase("path")]
+            [TestCase("path/")]
+            [TestCase("path/path2")]
+            [TestCase("path/path2/")]
+            public void WhenHasPath_ThenAppendPath(string path)
+            {
+                var sut = new Uri("http://local/mypath");
+
+                var result = sut.AppendPath(path);
+
+                Assert.That(result, Is.EqualTo(new Uri("http://local/mypath/" + path)));
+            }
+
+            [TestCase("/path")]
+            [TestCase("/path/")]
+            [TestCase("/path/path2")]
+            [TestCase("/path/path2/")]
+            public void WhenHasPath_AndStartsWithSlash_ThenAppendPath(string path)
+            {
+                var sut = new Uri("http://local/mypath/");
+
+                var result = sut.AppendPath(path);
+                
+                Assert.That(result, Is.EqualTo(new Uri("http://local/mypath" + path)));
+            }
+        }
+
+        [TestFixture]
         public class QueryToDictionary
         {
             [Test]
