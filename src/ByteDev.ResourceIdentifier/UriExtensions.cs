@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Web;
 
 namespace ByteDev.ResourceIdentifier
 {
@@ -53,23 +51,19 @@ namespace ByteDev.ResourceIdentifier
             if (newNameValues == null)
                 throw new ArgumentNullException(nameof(newNameValues));
 
-            var uriBuilder = new UriBuilder(source);
-
-            NameValueCollection nameValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            var nameValues = UriQueryConverter.ToNameValueCollection(source.Query);
 
             foreach (string key in newNameValues)
             {
-                var value = newNameValues[key];
+                var newValue = newNameValues[key];
 
-                if (value == null)
+                if (newValue == null)
                     nameValues.Remove(key);
                 else
-                    nameValues.AddOrUpdate(key, value);
+                    nameValues.AddOrUpdate(key, newValue);
             }
 
-            uriBuilder.Query = nameValues.ToString();
-            
-            return uriBuilder.Uri;
+            return source.SetQuery(nameValues);
         }
 
         /// <summary>
