@@ -31,8 +31,10 @@ Uri extension methods:
 - AppendPath
 - QueryToDictionary
 - QueryToNameValueCollection
+- RemoveFragment
 - RemoveQuery
 - RemoveQueryParam
+- RemoveQueryParams
 - HasPath
 - HasQuery
 - HasFragment
@@ -51,7 +53,24 @@ var uri = new Uri("https://example.com/")
 Console.Write(uri.AbsoluteUri);  // "https://example.com/over/there?name=John#myfrag"
 ```
 
-UriQueryConverter class methods:
+UriQueryConverter class can be used to convert a Uri query to various different formats.
+
+Methods:
 
 - ToString
+- ToDictionary
 - ToNameValueCollection
+
+Example:
+
+```csharp
+var nameValues = new NameValueCollection
+{
+    {"key1", "value1"},
+    {"key2", "value2"}
+};
+
+var query = UriQueryConverter.ToString(nameValues);
+
+// query == "?key1=value1&key2=value2"
+```

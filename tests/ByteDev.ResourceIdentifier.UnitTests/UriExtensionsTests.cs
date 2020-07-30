@@ -266,7 +266,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
             [TestCase("")]
             [TestCase("value2")]
-            public void WhenParamExists_AndValueIsNotNull_ThenModifyParamValue(string value)
+            public void WhenParamExists_AndValueIsNotNull_ThenUpdateParamValue(string value)
             {
                 var expected = new Uri($"http://localhost/myapp?name={value}");
 
@@ -293,13 +293,21 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             [TestCase("value")]
             public void WhenParamNotExists_AndValueIsNotNull_ThenAddParam(string value)
             {
-                var expected = new Uri($"http://localhost/myapp?name={value}");
-
                 var sut = new Uri("http://localhost/myapp");
 
                 var result = sut.AddOrUpdateQueryParam("name", value);
 
-                Assert.That(result, Is.EqualTo(expected));                
+                Assert.That(result, Is.EqualTo(new Uri($"http://localhost/myapp?name={value}")));                
+            }
+
+            [Test]
+            public void WhenValueContainsSpace_ThenEncodeValue()
+            {
+                var sut = new Uri("http://localhost/myapp");
+
+                var result = sut.AddOrUpdateQueryParam("name", "John Smith");
+                
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/myapp?name=John+Smith"));
             }
         }
 
@@ -344,6 +352,37 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?q1=1&q2=3&q3=10")));
                 Assert.That(result, Is.Not.SameAs(sut));
+            }
+        }
+
+        [TestFixture]
+        public class RemoveFragment
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.RemoveFragment(null));
+            }
+
+            [Test]
+            public void WhenHasNoFragment_ThenReturnWithoutFragment()
+            {
+                var sut = new Uri("http://localhost/myapp?name=John");
+
+                var result = sut.RemoveFragment();
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?name=John")));
+            }
+            
+            [TestCase("http://localhost/myapp?name=John#")]
+            [TestCase("http://localhost/myapp?name=John#somefragment")]
+            public void WhenHasFragment_ThenReturnWithoutFragment(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.RemoveFragment();
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?name=John")));
             }
         }
 
@@ -433,6 +472,66 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 var result = sut.RemoveQueryParam("name");
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?surname=Smith")));
+            }
+        }
+
+        [TestFixture]
+        public class RemoveQueryParams
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.RemoveQueryParams(null, Enumerable.Empty<string>()));
+            }
+            
+            [Test]
+            public void WhenNamesIsNull_ThenThrowException()
+            {
+                var sut = new Uri("http://localhost/myapp");
+
+                Assert.Throws<ArgumentNullException>(() => sut.RemoveQueryParams(null));
+            }
+
+            [Test]
+            public void WhenNamesIsEmpty_ThenReturnEqualUri()
+            {
+                var sut = new Uri("http://localhost/myapp?name=John");
+
+                var result = sut.RemoveQueryParams(Enumerable.Empty<string>());
+
+                Assert.That(result, Is.EqualTo(sut));
+            }
+
+            [Test]
+            public void WhenNamesNotExist_ThenNotRemoveName()
+            {
+                var sut = new Uri("http://localhost/myapp?name=value");
+
+                var result = sut.RemoveQueryParams(new[] { "anothername" });
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?name=value")));
+            }
+
+            [TestCase("http://localhost/myapp?name=", "http://localhost/myapp")]
+            [TestCase("http://localhost/myapp?name=value", "http://localhost/myapp")]
+            [TestCase("http://localhost/myapp?NAME=value", "http://localhost/myapp")]
+            public void WhenNameExists_ThenRemoveParam(string uri, string expected)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.RemoveQueryParams(new[] { "name" });
+
+                Assert.That(result, Is.EqualTo(new Uri(expected)));
+            }
+
+            [Test]
+            public void WhenBothNamesExist_ThenRemoveBothParam()
+            {
+                var sut = new Uri("http://localhost/myapp?name=John&surname=Smith");
+
+                var result = sut.RemoveQueryParams(new[] { "name", "surname" });
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp")));
             }
         }
     }
