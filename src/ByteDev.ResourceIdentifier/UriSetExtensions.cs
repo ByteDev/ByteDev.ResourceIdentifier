@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 
 namespace ByteDev.ResourceIdentifier
 {
@@ -19,10 +20,7 @@ namespace ByteDev.ResourceIdentifier
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            var uriBuilder = new UriBuilder(source)
-            {
-                Path = path,
-            };
+            var uriBuilder = new UriBuilder(source) { Path = path };
 
             return uriBuilder.Uri;
         }
@@ -39,12 +37,23 @@ namespace ByteDev.ResourceIdentifier
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            var uriBuilder = new UriBuilder(source)
-            {
-                Query = query
-            };
+            var uriBuilder = new UriBuilder(source) { Query = query };
 
             return uriBuilder.Uri;
+        }
+
+        /// <summary>
+        /// Returns a new Uri with the query set.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <param name="query">Query value to set.</param>
+        /// <returns>New Uri instance with the query set.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Uri SetQuery(this Uri source, NameValueCollection query)
+        {
+            var queryString = UriQueryConverter.ToString(query);
+
+            return SetQuery(source, queryString);
         }
 
         /// <summary>
@@ -59,10 +68,7 @@ namespace ByteDev.ResourceIdentifier
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            var uriBuilder = new UriBuilder(source)
-            {
-                Fragment = fragment
-            };
+            var uriBuilder = new UriBuilder(source) { Fragment = fragment };
 
             return uriBuilder.Uri;
         }

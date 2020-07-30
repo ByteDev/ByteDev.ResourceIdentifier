@@ -30,6 +30,7 @@ Uri extension methods:
 - AddOrUpdateQueryParams
 - AppendPath
 - QueryToDictionary
+- QueryToNameValueCollection
 - RemoveQuery
 - RemoveQueryParam
 - HasPath
@@ -37,6 +38,18 @@ Uri extension methods:
 - HasFragment
 - SetPath
 - SetQuery
+
+Example:
+
+```csharp
+var uri = new Uri("https://example.com/")
+    .AppendPath("over")
+    .AppendPath("there")
+    .AddOrUpdateQueryParam("name", "John")
+    .SetFragment("myfrag");
+
+Console.Write(uri.AbsoluteUri);  // "https://example.com/over/there?name=John#myfrag"
+```
 
 UriQueryConverter class methods:
 

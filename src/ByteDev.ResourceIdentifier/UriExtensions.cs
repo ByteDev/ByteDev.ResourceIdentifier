@@ -97,23 +97,31 @@ namespace ByteDev.ResourceIdentifier
         }
 
         /// <summary>
-        /// Returns the Uri query string as a dictionary.
+        /// Returns the Uri query string as a Dictionary.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
-        /// <returns>A dictionary of query string name value pairs.</returns>
+        /// <returns>Dictionary of query string name value pairs.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static Dictionary<string, string> QueryToDictionary(this Uri source)
+        public static IDictionary<string, string> QueryToDictionary(this Uri source)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            if (!source.HasQuery())
-                return new Dictionary<string, string>();
-            
-            return source.Query
-                .Substring(1)
-                .Split('&')
-                .ToDictionary(p => p.Split('=')[0], p => p.Split('=')[1]);
+            return UriQueryConverter.ToDictionary(source.Query);
+        }
+
+        /// <summary>
+        /// Returns the Uri query string as a NameValueCollection.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <returns>NameValueCollection of query string name value pairs.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static NameValueCollection QueryToNameValueCollection(this Uri source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            return UriQueryConverter.ToNameValueCollection(source.Query);
         }
 
         /// <summary>
@@ -143,14 +151,11 @@ namespace ByteDev.ResourceIdentifier
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Name was null or empty.", nameof(name));
 
-            var uriBuilder = new UriBuilder(source);
-            var nameValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            var nameValues = UriQueryConverter.ToNameValueCollection(source.Query);
 
             nameValues.Remove(name);
 
-            uriBuilder.Query = nameValues.ToString();
-
-            return uriBuilder.Uri;
+            return source.SetQuery(nameValues);
         }
     }
 }

@@ -153,6 +153,86 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 Assert.That(result.Second().Value, Is.EqualTo(string.Empty));
             }
         }
+        
+        [TestFixture]
+        public class QueryToNameValueCollection
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.QueryToNameValueCollection(null));
+            }
+
+            [TestCase("http://www.somewhere.com/")]
+            [TestCase("http://www.somewhere.com/app")]
+            [TestCase("http://www.somewhere.com/app?")]
+            public void WhenHasNoQueryString_ThenReturnEmpty(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.QueryToNameValueCollection();
+
+                Assert.That(result, Is.Empty);
+            }
+
+            [Test]
+            public void WhenHasOneParamAndValue_ThenReturnOneNameValuePair()
+            {
+                var sut = new Uri("http://www.somewhere.com/?s=hello");
+
+                var result = sut.QueryToNameValueCollection();
+
+                Assert.That(result.AllKeys.Length, Is.EqualTo(1));
+                Assert.That(result.GetValues("s")?.Single(), Is.EqualTo("hello"));
+            }
+
+            [Test]
+            public void WhenHasTwoParamsAndValues_ThenReturnTwoNameValuePairs()
+            {
+                var sut = new Uri("http://www.somewhere.com/?s=hello&w=WORLD");
+
+                var result = sut.QueryToNameValueCollection();
+
+                Assert.That(result.AllKeys.Length, Is.EqualTo(2));
+                Assert.That(result.GetValues("s")?.Single(), Is.EqualTo("hello"));
+                Assert.That(result.GetValues("w")?.Single(), Is.EqualTo("WORLD"));
+            }
+
+            [Test]
+            public void WhenHasTwoParamsWithSameName_ThenReturnOneNameTwoValues()
+            {
+                var sut = new Uri("http://www.somewhere.com/?s=hello&s=world");
+
+                var result = sut.QueryToNameValueCollection();
+
+                Assert.That(result.AllKeys.Length, Is.EqualTo(1));
+                Assert.That(result.GetValues("s")?.First(), Is.EqualTo("hello"));
+                Assert.That(result.GetValues("s")?.Second(), Is.EqualTo("world"));
+            }
+
+            [Test]
+            public void WhenHasParamWithNoValue_ThenReturnOneValuePair()
+            {
+                var sut = new Uri("http://www.somewhere.com/?s=");
+
+                var result = sut.QueryToNameValueCollection();
+
+                Assert.That(result.AllKeys.Length, Is.EqualTo(1));
+                Assert.That(result.GetValues("s")?.Single(), Is.Empty);
+            }
+
+            [Test]
+            public void WhenHasTwoParamsWithNoValues_ThenReturnTwoNameValuePairs()
+            {
+                var sut = new Uri("http://www.somewhere.com/?s=&w=");
+
+                var result = sut.QueryToNameValueCollection();
+
+                Assert.That(result.AllKeys.Length, Is.EqualTo(2));
+                Assert.That(result.GetValues("s")?.Single(), Is.Empty);
+                Assert.That(result.GetValues("w")?.Single(), Is.Empty);
+            }
+        }
 
         [TestFixture]
         public class AddOrUpdateQueryParam
@@ -268,6 +348,42 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [TestFixture]
+        public class RemoveQuery
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.RemoveQuery(null));
+            }
+
+            [TestCase("http://localhost/myapp")]
+            [TestCase("http://localhost/myapp?")]
+            public void WhenHasNoQueryString_ThenReturnWithoutQuery(string uri)
+            {
+                var expected = new Uri("http://localhost/myapp");
+
+                var sut = new Uri(uri);
+
+                var result = sut.RemoveQuery();
+
+                Assert.That(result, Is.EqualTo(expected));
+            }
+            
+            [TestCase("http://localhost/myapp?name")]
+            [TestCase("http://localhost/myapp?name=value")]
+            public void WhenQueryStringHasKeys_ThenReturnWithoutQuery(string uri)
+            {
+                var expected = new Uri("http://localhost/myapp");
+
+                var sut = new Uri(uri);
+
+                var result = sut.RemoveQuery();
+
+                Assert.That(result, Is.EqualTo(expected));
+            }
+        }
+
+        [TestFixture]
         public class RemoveQueryParam
         {
             [Test]
@@ -308,41 +424,15 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
                 Assert.That(result, Is.EqualTo(new Uri(expected)));
             }
-        }
 
-        [TestFixture]
-        public class RemoveQuery
-        {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
+            public void WhenNameExistsWithOthers_ThenRemoveParam()
             {
-                Assert.Throws<ArgumentNullException>(() => UriExtensions.RemoveQuery(null));
-            }
+                var sut = new Uri("http://localhost/myapp?name=John&surname=Smith");
 
-            [TestCase("http://localhost/myapp")]
-            [TestCase("http://localhost/myapp?")]
-            public void WhenHasNoQueryString_ThenReturnWithoutQuery(string uri)
-            {
-                var expected = new Uri("http://localhost/myapp");
+                var result = sut.RemoveQueryParam("name");
 
-                var sut = new Uri(uri);
-
-                var result = sut.RemoveQuery();
-
-                Assert.That(result, Is.EqualTo(expected));
-            }
-            
-            [TestCase("http://localhost/myapp?name")]
-            [TestCase("http://localhost/myapp?name=value")]
-            public void WhenQueryStringHasKeys_ThenReturnWithoutQuery(string uri)
-            {
-                var expected = new Uri("http://localhost/myapp");
-
-                var sut = new Uri(uri);
-
-                var result = sut.RemoveQuery();
-
-                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?surname=Smith")));
             }
         }
     }
