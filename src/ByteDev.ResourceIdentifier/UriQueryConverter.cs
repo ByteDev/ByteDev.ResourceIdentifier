@@ -58,6 +58,27 @@ namespace ByteDev.ResourceIdentifier
         }
 
         /// <summary>
+        /// Converts <paramref name="names" /> to a valid Uri path string.
+        /// </summary>
+        /// <param name="names">Collection of strings to convert.</param>
+        /// <returns>String representing a Uri query.</returns>
+        public static string ToString(IEnumerable<string> names)
+        {
+            if (names == null)
+                return string.Empty;
+
+            var query = new StringBuilder();
+
+            foreach (var name in names.Distinct())
+            {
+                query.Append(query.Length == 0 ? "?" : "&");
+                query.Append(name);
+            }
+
+            return query.ToString();
+        }
+
+        /// <summary>
         /// Converts <paramref name="query" /> to a NameValueCollection.
         /// </summary>
         /// <param name="query">Query string to convert.</param>

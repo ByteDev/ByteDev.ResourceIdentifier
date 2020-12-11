@@ -24,7 +24,7 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 
 ## Usage
 
-Uri extension methods:
+`Uri` extension methods:
 
 - AddOrUpdateQueryParam
 - AddOrUpdateQueryParams
@@ -40,6 +40,7 @@ Uri extension methods:
 - HasFragment
 - SetPath
 - SetQuery
+- SetFragment
 
 Example:
 
@@ -53,7 +54,11 @@ var uri = new Uri("https://example.com/")
 Console.Write(uri.AbsoluteUri);  // "https://example.com/over/there?name=John#myfrag"
 ```
 
-UriQueryConverter class can be used to convert a Uri query to various different formats.
+---
+
+### UriQueryConverter
+
+The `UriQueryConverter` class can be used to convert a URI query to various different formats.
 
 Methods:
 

@@ -57,6 +57,56 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [TestFixture]
+        public class ToStringEnumerable : UriQueryConverterTests
+        {
+            [Test]
+            public void WhenIsNull_ThenReturnEmpty()
+            {
+                var result = UriQueryConverter.ToString(null as IEnumerable<string>);
+
+                Assert.That(result, Is.Empty);
+            }
+
+            [Test]
+            public void WhenIsEmpty_ThenReturnEmpty()
+            {
+                var result = UriQueryConverter.ToString(Enumerable.Empty<string>());
+
+                Assert.That(result, Is.Empty);
+            }
+
+            [Test]
+            public void WhenHasOneName_ThenReturnAsString()
+            {
+                var names = new List<string> { "name1" };
+
+                var result = UriQueryConverter.ToString(names);
+
+                Assert.That(result, Is.EqualTo("?name1"));
+            }
+
+            [Test]
+            public void WhenHasTwoNames_ThenReturnAsString()
+            {
+                var names = new List<string> { "name1", "name2" };
+
+                var result = UriQueryConverter.ToString(names);
+
+                Assert.That(result, Is.EqualTo("?name1&name2"));
+            }
+
+            [Test]
+            public void WhenHasMultipleSameNames_ThenReturnWithoutDuplicates()
+            {
+                var names = new List<string> { "name1", "name2", "name1", "name3" };
+
+                var result = UriQueryConverter.ToString(names);
+
+                Assert.That(result, Is.EqualTo("?name1&name2&name3"));
+            }
+        }
+
+        [TestFixture]
         public class ToStringDictionary
         {
             [Test]
