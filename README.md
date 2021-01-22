@@ -51,7 +51,7 @@ var uri = new Uri("https://example.com/")
     .AddOrUpdateQueryParam("name", "John")
     .SetFragment("myfrag");
 
-Console.Write(uri.AbsoluteUri);  // "https://example.com/over/there?name=John#myfrag"
+// uri.AbsoluteUri = "https://example.com/over/there?name=John#myfrag"
 ```
 
 ---

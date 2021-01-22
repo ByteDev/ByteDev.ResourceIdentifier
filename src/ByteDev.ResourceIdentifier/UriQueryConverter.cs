@@ -30,7 +30,9 @@ namespace ByteDev.ResourceIdentifier
             foreach (var item in items)
             {
                 sb.Append(sb.Length == 0 ? "?" : "&");
-                sb.Append(item.key + "=" + item.value);
+                sb.Append(HttpUtility.UrlEncode(item.key));
+                sb.Append("=");
+                sb.Append(HttpUtility.UrlEncode(item.value));
             }
 
             return sb.ToString();
@@ -51,7 +53,9 @@ namespace ByteDev.ResourceIdentifier
             foreach (var item in value)
             {
                 sb.Append(sb.Length == 0 ? "?" : "&");
-                sb.Append(item.Key + "=" + item.Value);
+                sb.Append(HttpUtility.UrlEncode(item.Key));
+                sb.Append("=");
+                sb.Append(HttpUtility.UrlEncode(item.Value));
             }
 
             return sb.ToString();
@@ -85,10 +89,24 @@ namespace ByteDev.ResourceIdentifier
         /// <returns>NameValueCollection representing a Uri query.</returns>
         public static NameValueCollection ToNameValueCollection(string query)
         {
-            if (query == null)
+            if (string.IsNullOrEmpty(query) || query == "?")
                 return new NameValueCollection();
 
-            return HttpUtility.ParseQueryString(query);
+            var pairs = ToNameValueArray(query);
+
+            var collection = new NameValueCollection(pairs.Length);
+
+            foreach (var pair in pairs)
+            {
+                var nameValue = pair.Split('=');
+
+                if (nameValue.Length == 1)
+                    collection.Add(nameValue[0], null);
+                else
+                    collection.Add(nameValue[0], nameValue[1]);
+            }
+
+            return collection;
         }
 
         /// <summary>
@@ -101,12 +119,36 @@ namespace ByteDev.ResourceIdentifier
             if (string.IsNullOrEmpty(query) || query == "?")
                 return new Dictionary<string, string>();
 
-            if (query.StartsWith("?"))
-                query = query.Substring(1);
+            var pairs = ToNameValueArray(query);
 
-            return query
-                .Split('&')
-                .ToDictionary(p => p.Split('=')[0], p => p.Split('=')[1]);
+            var dict = new Dictionary<string, string>();
+
+            foreach (var pair in pairs)
+            {
+                var nameValue = pair.Split('=');
+
+                if (nameValue.Length == 1)
+                    dict.Add(nameValue[0], null);
+                else
+                    dict.Add(nameValue[0], nameValue[1]);         
+            }
+
+            return dict;
+        }
+
+        public static string[] ToNameValueArray(string query)
+        {
+            var queryFormatted = RemoveQuestionMark(query);
+
+            return queryFormatted.Split('&');
+        }
+
+        private static string RemoveQuestionMark(string query)
+        {
+            if (query.StartsWith("?"))
+                return query.Substring(1);
+
+            return query;
         }
     }
 }

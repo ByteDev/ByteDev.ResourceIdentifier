@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace ByteDev.ResourceIdentifier
@@ -50,6 +51,20 @@ namespace ByteDev.ResourceIdentifier
         /// <returns>New Uri instance with the query set.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static Uri SetQuery(this Uri source, NameValueCollection query)
+        {
+            var queryString = UriQueryConverter.ToString(query);
+
+            return SetQuery(source, queryString);
+        }
+
+        /// <summary>
+        /// Returns a new Uri with the query set.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <param name="query">Query value to set.</param>
+        /// <returns>New Uri instance with the query set.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Uri SetQuery(this Uri source, IEnumerable<string> query)
         {
             var queryString = UriQueryConverter.ToString(query);
 

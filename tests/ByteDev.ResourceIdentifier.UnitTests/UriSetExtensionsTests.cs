@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace ByteDev.ResourceIdentifier.UnitTests
 {
@@ -54,6 +55,18 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 var result = sut.SetQuery("name=John Smith");
 
                 Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?name=John%20Smith"));
+            }
+
+            [Test]
+            public void WhenStringCollection_ThenSetQuery()
+            {
+                var names = new[] { "name1", "name2", "name3" };
+
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetQuery(names);
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?name1&name2&name3"));
             }
         }
 
