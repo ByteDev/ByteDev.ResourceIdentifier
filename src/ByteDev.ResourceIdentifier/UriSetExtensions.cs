@@ -47,12 +47,12 @@ namespace ByteDev.ResourceIdentifier
         /// Returns a new Uri with the query set.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
-        /// <param name="query">Query value to set.</param>
+        /// <param name="queryNameValues">Query name values to set.</param>
         /// <returns>New Uri instance with the query set.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static Uri SetQuery(this Uri source, NameValueCollection query)
+        public static Uri SetQuery(this Uri source, NameValueCollection queryNameValues)
         {
-            var queryString = UriQueryConverter.ToString(query);
+            var queryString = UriQueryConverter.ToString(queryNameValues);
 
             return SetQuery(source, queryString);
         }
@@ -61,12 +61,12 @@ namespace ByteDev.ResourceIdentifier
         /// Returns a new Uri with the query set.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
-        /// <param name="query">Query value to set.</param>
+        /// <param name="queryNames">Query names to set.</param>
         /// <returns>New Uri instance with the query set.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static Uri SetQuery(this Uri source, IEnumerable<string> query)
+        public static Uri SetQuery(this Uri source, IEnumerable<string> queryNames)
         {
-            var queryString = UriQueryConverter.ToString(query);
+            var queryString = UriQueryConverter.ToString(queryNames);
 
             return SetQuery(source, queryString);
         }

@@ -13,10 +13,12 @@ namespace ByteDev.ResourceIdentifier
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
         /// <returns>Uri with no query string.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static Uri RemoveQuery(this Uri source)
         {
-            return UriSetExtensions.SetQuery(source, string.Empty);
+            if (source == null)
+                return null;
+
+            return source.SetQuery(string.Empty);
         }
 
         /// <summary>
@@ -25,11 +27,10 @@ namespace ByteDev.ResourceIdentifier
         /// <param name="source">Uri to perform the operation on.</param>
         /// <param name="name">The name of the parameter to remove.</param>
         /// <returns>Uri with any matching parameters removed.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static Uri RemoveQueryParam(this Uri source, string name)
         {
             if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                return null;
 
             if (string.IsNullOrEmpty(name))
                 return source;
@@ -47,11 +48,10 @@ namespace ByteDev.ResourceIdentifier
         /// <param name="source">Uri to perform the operation on.</param>
         /// <param name="names">The names of the parameters to remove.</param>
         /// <returns>Uri with any matching parameters removed.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static Uri RemoveQueryParams(this Uri source, IEnumerable<string> names)
         {
             if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                return null;
 
             if (names == null)
                 return source;
@@ -71,10 +71,12 @@ namespace ByteDev.ResourceIdentifier
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
         /// <returns>Uri with no fragment.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static Uri RemoveFragment(this Uri source)
         {
-            return UriSetExtensions.SetFragment(source, string.Empty);
+            if (source == null)
+                return null;
+
+            return source.SetFragment(string.Empty);
         }
     }
 }

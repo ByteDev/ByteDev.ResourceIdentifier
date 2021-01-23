@@ -7,7 +7,8 @@ using System.Web;
 namespace ByteDev.ResourceIdentifier
 {
     /// <summary>
-    /// Represents a converter for to converting Uri queries in different formats.
+    /// Represents a converter for to converting Uri queries in different formats. Url encoding/decoding
+    /// will be used for all parameter names and values.
     /// </summary>
     public static class UriQueryConverter
     {
@@ -30,9 +31,9 @@ namespace ByteDev.ResourceIdentifier
             foreach (var item in items)
             {
                 sb.Append(sb.Length == 0 ? "?" : "&");
-                sb.Append(HttpUtility.UrlEncode(item.key));
+                sb.Append(UrlEncode(item.key));
                 sb.Append("=");
-                sb.Append(HttpUtility.UrlEncode(item.value));
+                sb.Append(UrlEncode(item.value));
             }
 
             return sb.ToString();
@@ -53,9 +54,9 @@ namespace ByteDev.ResourceIdentifier
             foreach (var item in value)
             {
                 sb.Append(sb.Length == 0 ? "?" : "&");
-                sb.Append(HttpUtility.UrlEncode(item.Key));
+                sb.Append(UrlEncode(item.Key));
                 sb.Append("=");
-                sb.Append(HttpUtility.UrlEncode(item.Value));
+                sb.Append(UrlEncode(item.Value));
             }
 
             return sb.ToString();
@@ -76,7 +77,7 @@ namespace ByteDev.ResourceIdentifier
             foreach (var name in names.Distinct())
             {
                 query.Append(query.Length == 0 ? "?" : "&");
-                query.Append(name);
+                query.Append(UrlEncode(name));
             }
 
             return query.ToString();
@@ -98,12 +99,9 @@ namespace ByteDev.ResourceIdentifier
 
             foreach (var pair in pairs)
             {
-                var nameValue = pair.Split('=');
+                var keyValuePair = QueryKeyValuePairFactory.Create(pair);
 
-                if (nameValue.Length == 1)
-                    collection.Add(nameValue[0], null);
-                else
-                    collection.Add(nameValue[0], nameValue[1]);
+                collection.Add(keyValuePair.Key, keyValuePair.Value);
             }
 
             return collection;
@@ -121,34 +119,28 @@ namespace ByteDev.ResourceIdentifier
 
             var pairs = ToNameValueArray(query);
 
-            var dict = new Dictionary<string, string>();
+            var dict = new Dictionary<string, string>(pairs.Length);
 
             foreach (var pair in pairs)
             {
-                var nameValue = pair.Split('=');
+                var keyValuePair = QueryKeyValuePairFactory.Create(pair);
 
-                if (nameValue.Length == 1)
-                    dict.Add(nameValue[0], null);
-                else
-                    dict.Add(nameValue[0], nameValue[1]);         
+                dict.Add(keyValuePair.Key, keyValuePair.Value);
             }
 
             return dict;
         }
 
-        public static string[] ToNameValueArray(string query)
+        private static string[] ToNameValueArray(string query)
         {
-            var queryFormatted = RemoveQuestionMark(query);
+            var queryFormatted = query.RemoveQuestionMarkPrefix();
 
             return queryFormatted.Split('&');
         }
 
-        private static string RemoveQuestionMark(string query)
+        private static string UrlEncode(string text)
         {
-            if (query.StartsWith("?"))
-                return query.Substring(1);
-
-            return query;
+            return HttpUtility.UrlEncode(text);
         }
     }
 }

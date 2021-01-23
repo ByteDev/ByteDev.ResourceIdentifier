@@ -8,43 +8,14 @@ namespace ByteDev.ResourceIdentifier.UnitTests
     public class UriRemoveExtensionsTests
     {
         [TestFixture]
-        public class RemoveFragment
-        {
-            [Test]
-            public void WhenSourceIsNull_ThenThrowException()
-            {
-                Assert.Throws<ArgumentNullException>(() => UriRemoveExtensions.RemoveFragment(null));
-            }
-
-            [Test]
-            public void WhenHasNoFragment_ThenReturnWithoutFragment()
-            {
-                var sut = new Uri("http://localhost/myapp?name=John");
-
-                var result = sut.RemoveFragment();
-
-                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?name=John")));
-            }
-            
-            [TestCase("http://localhost/myapp?name=John#")]
-            [TestCase("http://localhost/myapp?name=John#somefragment")]
-            public void WhenHasFragment_ThenReturnWithoutFragment(string uri)
-            {
-                var sut = new Uri(uri);
-
-                var result = sut.RemoveFragment();
-
-                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?name=John")));
-            }
-        }
-
-        [TestFixture]
         public class RemoveQuery
         {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
+            public void WhenSourceIsNull_ThenReturnNull()
             {
-                Assert.Throws<ArgumentNullException>(() => UriRemoveExtensions.RemoveQuery(null));
+                var result = UriRemoveExtensions.RemoveQuery(null);
+
+                Assert.That(result, Is.Null);
             }
 
             [TestCase("http://localhost/myapp")]
@@ -78,9 +49,11 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         public class RemoveQueryParam
         {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
+            public void WhenSourceIsNull_ThenReturnNull()
             {
-                Assert.Throws<ArgumentNullException>(() => UriRemoveExtensions.RemoveQueryParam(null, "name"));
+                var result = UriRemoveExtensions.RemoveQueryParam(null, "name");
+
+                Assert.That(result, Is.Null);
             }
             
             [TestCase(null)]
@@ -133,9 +106,11 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         public class RemoveQueryParams
         {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
+            public void WhenSourceIsNull_ThenReturnNull()
             {
-                Assert.Throws<ArgumentNullException>(() => UriRemoveExtensions.RemoveQueryParams(null, Enumerable.Empty<string>()));
+                var result = UriRemoveExtensions.RemoveQueryParams(null, Enumerable.Empty<string>());
+
+                Assert.That(result, Is.Null);
             }
             
             [Test]
@@ -199,6 +174,39 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 var result = sut.RemoveQueryParams(new[] { "name", null, string.Empty, "surname" });
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp")));
+            }
+        }
+
+        [TestFixture]
+        public class RemoveFragment
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenReturnNull()
+            {
+                var result = UriRemoveExtensions.RemoveFragment(null);
+
+                Assert.That(result, Is.Null);
+            }
+
+            [Test]
+            public void WhenHasNoFragment_ThenReturnWithoutFragment()
+            {
+                var sut = new Uri("http://localhost/myapp?name=John");
+
+                var result = sut.RemoveFragment();
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?name=John")));
+            }
+            
+            [TestCase("http://localhost/myapp?name=John#")]
+            [TestCase("http://localhost/myapp?name=John#somefragment")]
+            public void WhenHasFragment_ThenReturnWithoutFragment(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.RemoveFragment();
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?name=John")));
             }
         }
     }

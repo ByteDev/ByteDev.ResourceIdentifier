@@ -12,11 +12,10 @@ namespace ByteDev.ResourceIdentifier
         /// </summary>
         /// <param name="source">The Uri to perform the operation on.</param>
         /// <returns>True if <paramref name="source" /> has a path; otherwise returns false.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static bool HasPath(this Uri source)
         {
             if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                return false;
 
             return !string.IsNullOrEmpty(source.AbsolutePath) && source.AbsolutePath != "/";
         }
@@ -26,11 +25,10 @@ namespace ByteDev.ResourceIdentifier
         /// </summary>
         /// <param name="source">The Uri to perform the operation on.</param>
         /// <returns>True if <paramref name="source" /> has a query string; otherwise returns false.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static bool HasQuery(this Uri source)
         {
             if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                return false;
 
             return !string.IsNullOrEmpty(source.Query) && source.Query != "?";
         }
@@ -40,11 +38,10 @@ namespace ByteDev.ResourceIdentifier
         /// </summary>
         /// <param name="source">The Uri to perform the operation on.</param>
         /// <returns>True if <paramref name="source" /> has a fragment; otherwise returns false.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
         public static bool HasFragment(this Uri source)
         {
             if (source == null)
-                throw new ArgumentNullException(nameof(source));
+                return false;
 
             return !string.IsNullOrEmpty(source.Fragment) && source.Fragment != "#";
         }

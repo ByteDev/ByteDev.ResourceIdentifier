@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using ByteDev.Collections;
 using NUnit.Framework;
 
 namespace ByteDev.ResourceIdentifier.UnitTests
@@ -83,158 +82,6 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [TestFixture]
-        public class QueryToDictionary
-        {
-            [Test]
-            public void WhenSourceIsNull_ThenThrowException()
-            {
-                Assert.Throws<ArgumentNullException>(() => UriExtensions.QueryToDictionary(null));
-            }
-
-            [TestCase("http://www.somewhere.com/")]
-            [TestCase("http://www.somewhere.com/app")]
-            [TestCase("http://www.somewhere.com/app?")]
-            public void WhenHasNoQueryString_ThenReturnEmpty(string uri)
-            {
-                var sut = new Uri(uri);
-
-                var result = sut.QueryToDictionary();
-
-                Assert.That(result, Is.Empty);
-            }
-
-            [Test]
-            public void WhenHasOneParamAndValue_ThenReturnOneNameValuePair()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=hello");
-
-                var result = sut.QueryToDictionary();
-
-                Assert.That(result.Single().Key, Is.EqualTo("s"));
-                Assert.That(result.Single().Value, Is.EqualTo("hello"));
-            }
-
-            [Test]
-            public void WhenHasTwoParamsAndValues_ThenReturnTwoNameValuePairs()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=hello&w=WORLD");
-
-                var result = sut.QueryToDictionary();
-
-                Assert.That(result.Count, Is.EqualTo(2));
-                Assert.That(result.First().Key, Is.EqualTo("s"));
-                Assert.That(result.First().Value, Is.EqualTo("hello"));
-                Assert.That(result.Second().Key, Is.EqualTo("w"));
-                Assert.That(result.Second().Value, Is.EqualTo("WORLD"));
-            }
-
-            [Test]
-            public void WhenHasParamWithNoValue_ThenReturnOneValuePair()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=");
-
-                var result = sut.QueryToDictionary();
-
-                Assert.That(result.Single().Key, Is.EqualTo("s"));
-                Assert.That(result.Single().Value, Is.EqualTo(string.Empty));
-            }
-
-            [Test]
-            public void WhenHasTwoParamsWithNoValues_ThenReturnTwoNameValuePairs()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=&w=");
-
-                var result = sut.QueryToDictionary();
-
-                Assert.That(result.Count, Is.EqualTo(2));
-                Assert.That(result.First().Key, Is.EqualTo("s"));
-                Assert.That(result.First().Value, Is.EqualTo(string.Empty));
-                Assert.That(result.Second().Key, Is.EqualTo("w"));
-                Assert.That(result.Second().Value, Is.EqualTo(string.Empty));
-            }
-        }
-        
-        [TestFixture]
-        public class QueryToNameValueCollection
-        {
-            [Test]
-            public void WhenSourceIsNull_ThenThrowException()
-            {
-                Assert.Throws<ArgumentNullException>(() => UriExtensions.QueryToNameValueCollection(null));
-            }
-
-            [TestCase("http://www.somewhere.com/")]
-            [TestCase("http://www.somewhere.com/app")]
-            [TestCase("http://www.somewhere.com/app?")]
-            public void WhenHasNoQueryString_ThenReturnEmpty(string uri)
-            {
-                var sut = new Uri(uri);
-
-                var result = sut.QueryToNameValueCollection();
-
-                Assert.That(result, Is.Empty);
-            }
-
-            [Test]
-            public void WhenHasOneParamAndValue_ThenReturnOneNameValuePair()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=hello");
-
-                var result = sut.QueryToNameValueCollection();
-
-                Assert.That(result.AllKeys.Length, Is.EqualTo(1));
-                Assert.That(result.GetValues("s")?.Single(), Is.EqualTo("hello"));
-            }
-
-            [Test]
-            public void WhenHasTwoParamsAndValues_ThenReturnTwoNameValuePairs()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=hello&w=WORLD");
-
-                var result = sut.QueryToNameValueCollection();
-
-                Assert.That(result.AllKeys.Length, Is.EqualTo(2));
-                Assert.That(result.GetValues("s")?.Single(), Is.EqualTo("hello"));
-                Assert.That(result.GetValues("w")?.Single(), Is.EqualTo("WORLD"));
-            }
-
-            [Test]
-            public void WhenHasTwoParamsWithSameName_ThenReturnOneNameTwoValues()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=hello&s=world");
-
-                var result = sut.QueryToNameValueCollection();
-
-                Assert.That(result.AllKeys.Length, Is.EqualTo(1));
-                Assert.That(result.GetValues("s")?.First(), Is.EqualTo("hello"));
-                Assert.That(result.GetValues("s")?.Second(), Is.EqualTo("world"));
-            }
-
-            [Test]
-            public void WhenHasParamWithNoValue_ThenReturnOneValuePair()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=");
-
-                var result = sut.QueryToNameValueCollection();
-
-                Assert.That(result.AllKeys.Length, Is.EqualTo(1));
-                Assert.That(result.GetValues("s")?.Single(), Is.Empty);
-            }
-
-            [Test]
-            public void WhenHasTwoParamsWithNoValues_ThenReturnTwoNameValuePairs()
-            {
-                var sut = new Uri("http://www.somewhere.com/?s=&w=");
-
-                var result = sut.QueryToNameValueCollection();
-
-                Assert.That(result.AllKeys.Length, Is.EqualTo(2));
-                Assert.That(result.GetValues("s")?.Single(), Is.Empty);
-                Assert.That(result.GetValues("w")?.Single(), Is.Empty);
-            }
-        }
-
-        [TestFixture]
         public class AddOrUpdateQueryParam
         {
             [Test]
@@ -312,7 +159,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [TestFixture]
-        public class AddOrUpdateQueryParams
+        public class AddOrUpdateQueryParams_NameValueCollection
         {
             [Test]
             public void WhenSourceIsNull_ThenThrowException()
@@ -325,7 +172,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             {
                 var sut = new Uri("http://localhost/myapp");
 
-                Assert.Throws<ArgumentNullException>(() => sut.AddOrUpdateQueryParams(null));
+                Assert.Throws<ArgumentNullException>(() => sut.AddOrUpdateQueryParams(null as NameValueCollection));
             }
 
             [Test]
@@ -345,6 +192,50 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 var sut = new Uri("http://localhost/myapp?q1=1&q2=2");
 
                 var result = sut.AddOrUpdateQueryParams(new NameValueCollection
+                {
+                    { "q2", "3" },
+                    { "q3", "10" }
+                });
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?q1=1&q2=3&q3=10")));
+                Assert.That(result, Is.Not.SameAs(sut));
+            }
+        }
+
+        [TestFixture]
+        public class AddOrUpdateQueryParams_Dictionary
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.AddOrUpdateQueryParams(null, new Dictionary<string, string>()));
+            }
+
+            [Test]
+            public void WhenNameValuesIsNull_ThenThrowException()
+            {
+                var sut = new Uri("http://localhost/myapp");
+
+                Assert.Throws<ArgumentNullException>(() => sut.AddOrUpdateQueryParams(null as IDictionary<string, string>));
+            }
+
+            [Test]
+            public void WhenNameValuesIsEmpty_ThenReturnEqual()
+            {
+                var sut = new Uri("http://localhost/myapp?q1=1&q2=2");
+
+                var result = sut.AddOrUpdateQueryParams(new Dictionary<string, string>());
+
+                Assert.That(result, Is.EqualTo(sut));
+                Assert.That(result, Is.Not.SameAs(sut));
+            }
+
+            [Test]
+            public void WhenNameValuesHasItems_ThenUpdateQuery()
+            {
+                var sut = new Uri("http://localhost/myapp?q1=1&q2=2");
+
+                var result = sut.AddOrUpdateQueryParams(new Dictionary<string, string>()
                 {
                     { "q2", "3" },
                     { "q3", "10" }

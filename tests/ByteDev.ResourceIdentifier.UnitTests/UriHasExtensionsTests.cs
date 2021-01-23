@@ -10,9 +10,11 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         public class HasPath
         {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
+            public void WhenSourceIsNull_ThenReturnFalse()
             {
-                Assert.Throws<ArgumentNullException>(() => UriHasExtensions.HasPath(null));
+                var result = UriHasExtensions.HasPath(null);
+
+                Assert.That(result, Is.False);
             }
 
             [TestCase("http://localhost")]
@@ -44,9 +46,11 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         public class HasQuery
         {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
+            public void WhenSourceIsNull_ThenReturnFalse()
             {
-                Assert.Throws<ArgumentNullException>(() => UriHasExtensions.HasQuery(null));
+                var result = UriHasExtensions.HasQuery(null);
+
+                Assert.That(result, Is.False);
             }
 
             [TestCase("http://local/")]
@@ -77,9 +81,11 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         public class HasFragment
         {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
+            public void WhenSourceIsNull_ThenReturnFalse()
             {
-                Assert.Throws<ArgumentNullException>(() => UriHasExtensions.HasFragment(null));
+                var result = UriHasExtensions.HasFragment(null);
+
+                Assert.That(result, Is.False);
             }
 
             [TestCase("http://local/app")]
