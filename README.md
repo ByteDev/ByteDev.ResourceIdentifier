@@ -4,7 +4,7 @@
 
 # ByteDev.ResourceIdentifier
 
-.NET Standard library of resource identifer (URI) related functionality.
+.NET Standard library of resource identifier (URI) related functionality.
 
 ## Installation
 
