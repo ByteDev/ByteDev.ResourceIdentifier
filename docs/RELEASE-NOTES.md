@@ -1,5 +1,16 @@
 # Release Notes
 
+## 2.1.0 - ?
+
+Breaking changes:
+- (None)
+
+New features:
+- Added `AppendPath` overload that takes segments.
+
+Bug fixes / internal changes:
+- Fixed bug in `AppendPath` method where path not always appended correctly if URI has querystring, fragment etc.
+
 ## 2.0.0 - 23 January 2021
 
 Breaking changes:

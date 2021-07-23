@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using ByteDev.Strings;
 using NUnit.Framework;
 
 namespace ByteDev.ResourceIdentifier.UnitTests
@@ -60,11 +61,11 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             [TestCase("path/path2/")]
             public void WhenHasPath_ThenAppendPath(string path)
             {
-                var sut = new Uri("http://local/mypath");
+                var sut = new Uri("https://example.com:8080/over/there?name=John#myfrag");
 
                 var result = sut.AppendPath(path);
 
-                Assert.That(result, Is.EqualTo(new Uri("http://local/mypath/" + path)));
+                Assert.That(result, Is.EqualTo(new Uri($"https://example.com:8080/over/there/{path}?name=John#myfrag")));
             }
 
             [TestCase("/path")]
@@ -73,11 +74,87 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             [TestCase("/path/path2/")]
             public void WhenHasPath_AndStartsWithSlash_ThenAppendPath(string path)
             {
-                var sut = new Uri("http://local/mypath/");
+                var sut = new Uri("https://example.com:8080/over/there?name=John#myfrag");
 
                 var result = sut.AppendPath(path);
+
+                var pathNoStartSlash = path.RemoveStartsWith("/");
+
+                Assert.That(result, Is.EqualTo(new Uri($"https://example.com:8080/over/there/{pathNoStartSlash}?name=John#myfrag")));
+            }
+
+            [Test]
+            public void WhenPathHasEndSlash_ThenAppendPath()
+            {
+                var sut = new Uri("https://example.com:8080/over/there/?name=John#myfrag");
+
+                var result = sut.AppendPath("path/path2");
                 
-                Assert.That(result, Is.EqualTo(new Uri("http://local/mypath" + path)));
+                Assert.That(result, Is.EqualTo(new Uri("https://example.com:8080/over/there/path/path2/?name=John#myfrag")));
+            }
+        }
+
+        [TestFixture]
+        public class AppendPath_Segments : UriExtensionsTests
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.AppendPath(null, "path", "path2"));
+            }
+
+            [Test]
+            public void WhenSegmentsIsNull_ThenReturnSameUri()
+            {
+                var sut = new Uri("http://local");
+
+                var result = sut.AppendPath(null as string[]);
+
+                Assert.That(result, Is.SameAs(sut));
+            }
+
+            [Test]
+            public void WhenSegmentsIsEmpty_ThenReturnSameUri()
+            {
+                var sut = new Uri("http://local");
+
+                var result = sut.AppendPath();
+
+                Assert.That(result, Is.SameAs(sut));
+            }
+
+            [TestCase("path")]
+            [TestCase("/path")]
+            [TestCase("/path/")]
+            public void WhenOneSegment_ThenAppendPath(string segment)
+            {
+                var sut = new Uri("https://example.com:8080/over/there?name=John#myfrag");
+
+                var result = sut.AppendPath(new[] { segment });
+
+                Assert.That(result, Is.EqualTo(new Uri("https://example.com:8080/over/there/path?name=John#myfrag")));
+            }
+
+            [TestCase("path1", "path2")]
+            [TestCase("/path1", "/path2")]
+            [TestCase("/path1/", "/path2/")]
+            public void WhenTwoSegments_ThenAppendPath(string segment1, string segment2)
+            {
+                var sut = new Uri("https://example.com:8080/over/there?name=John#myfrag");
+
+                var result = sut.AppendPath(segment1, segment2);
+
+                Assert.That(result, Is.EqualTo(new Uri("https://example.com:8080/over/there/path1/path2?name=John#myfrag")));
+            }
+
+            [Test]
+            public void WhenHasNoPath_ThenAppendPath()
+            {
+                var sut = new Uri("https://example.com:8080/?name=John#myfrag");
+
+                var result = sut.AppendPath("path1", "path2");
+
+                Assert.That(result, Is.EqualTo(new Uri("https://example.com:8080/path1/path2?name=John#myfrag")));
             }
         }
 

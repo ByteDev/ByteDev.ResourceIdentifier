@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Text;
 
 namespace ByteDev.ResourceIdentifier
 {
@@ -118,10 +119,43 @@ namespace ByteDev.ResourceIdentifier
             while (path.StartsWith("/"))
                 path = path.Substring(1);
 
-            if (source.AbsolutePath.EndsWith("/"))
+            if (source.HasPath() && source.AbsolutePath.EndsWith("/"))
+                return source.SetPath(source.AbsolutePath + path.EnsureEndsWith("/"));
+
+            if (source.AbsolutePath == "/")
                 return source.SetPath(source.AbsolutePath + path);
 
             return source.SetPath(source.AbsolutePath + "/" + path);
+        }
+
+        /// <summary>
+        /// Appends the given path segments to any existing path in the Uri.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <param name="segments">Path segments to append.</param>
+        /// <returns>A Uri with the appended path segments.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Uri AppendPath(this Uri source, params object[] segments)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (segments == null || segments.Length == 0)
+                return source;
+
+            var sb = new StringBuilder();
+
+            foreach (var segment in segments)
+            {
+                if (sb.Length > 0)
+                    sb.Append("/");
+
+                sb.Append(segment.ToString()
+                    .RemoveStartsWith("/")
+                    .RemoveEndsWith("/"));
+            }
+
+            return AppendPath(source, sb.ToString());
         }
     }
 }
