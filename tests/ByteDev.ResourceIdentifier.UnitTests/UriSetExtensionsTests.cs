@@ -79,6 +79,16 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
                 Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?name1&name2&name3"));
             }
+
+            [Test]
+            public void WhenUriAlreadyHasJustQuestionMark_ThenSetQuery()
+            {
+                var sut = new Uri("http://localhost/path?");
+
+                var result = sut.SetQuery("?age=50");
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/path?age=50")));
+            }
         }
 
         [TestFixture]
@@ -123,21 +133,33 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
             [TestCase(null)]
             [TestCase("")]
-            public void WhenFragmentIsNullOrEmpty_ThenRemovePath(string path)
+            public void WhenFragmentIsNullOrEmpty_ThenRemoveFragment(string fragment)
             {
                 var sut = new Uri("http://localhost/path?name=value#someFragment");
 
-                var result = sut.SetFragment(path);
+                var result = sut.SetFragment(fragment);
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/path?name=value")));
             }
 
-            [Test]
-            public void WhenPathValid_ThenSetPath()
+            [TestCase("newfrag")]
+            [TestCase("#newfrag")]
+            public void WhenHasNoFragment_ThenSetFragment(string fragment)
+            {
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetFragment(fragment);
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/path?name=value#newfrag")));
+            }
+
+            [TestCase("newfrag")]
+            [TestCase("#newfrag")]
+            public void WhenHasFragment_ThenSetFragment(string fragment)
             {
                 var sut = new Uri("http://localhost/path?name=value#fragment");
 
-                var result = sut.SetFragment("newfrag");
+                var result = sut.SetFragment(fragment);
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/path?name=value#newfrag")));
             }

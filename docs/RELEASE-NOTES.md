@@ -1,5 +1,17 @@
 # Release Notes
 
+## 2.1.1 - 24 July 2021
+
+Breaking changes:
+- (None)
+
+New features:
+- (None)
+
+Bug fixes / internal changes:
+- Fix where `SetQuery` method would add extra query string question mark prefix when consumed in .NET Framework.
+- Fix where `SetFragment` method would add extra fragment hash prefix when consumed in .NET Framework.
+
 ## 2.1.0 - 24 July 2021
 
 Breaking changes:

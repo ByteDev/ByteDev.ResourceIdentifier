@@ -38,7 +38,12 @@ namespace ByteDev.ResourceIdentifier
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            var uriBuilder = new UriBuilder(source) { Query = query };
+            var queryNoQMark = query.RemoveStartsWith("?");
+
+            var uriBuilder = new UriBuilder(source)
+            {
+                Query = queryNoQMark
+            };
 
             return uriBuilder.Uri;
         }
@@ -83,7 +88,12 @@ namespace ByteDev.ResourceIdentifier
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            var uriBuilder = new UriBuilder(source) { Fragment = fragment };
+            var fragmentNoHash = fragment.RemoveStartsWith("#");
+
+            var uriBuilder = new UriBuilder(source)
+            {
+                Fragment = fragmentNoHash
+            };
 
             return uriBuilder.Uri;
         }
