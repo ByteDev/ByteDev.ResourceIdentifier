@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace ByteDev.ResourceIdentifier.UnitTests
 {
@@ -25,6 +24,18 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 var result = sut.SetQuery(query);
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/path")));
+            }
+
+            [TestCase("http://localhost/")]
+            [TestCase("http://localhost/path")]
+            [TestCase("http://localhost/path/")]
+            public void WhenUriHasNoQuery_ThenAddQuery(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.SetQuery("age=50&name=John");
+
+                Assert.That(result, Is.EqualTo(new Uri(uri + "?age=50&name=John")));
             }
 
             [Test]

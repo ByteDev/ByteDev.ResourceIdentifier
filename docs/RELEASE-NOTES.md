@@ -1,6 +1,6 @@
 # Release Notes
 
-## 2.1.0 - ?
+## 2.1.0 - 24 July 2021
 
 Breaking changes:
 - (None)
