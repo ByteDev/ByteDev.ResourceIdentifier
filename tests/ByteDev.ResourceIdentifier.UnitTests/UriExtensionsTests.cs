@@ -179,38 +179,37 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             [Test]
             public void WhenParamExists_AndValueIsNull_ThenRemoveParam()
             {
-                var expected = new Uri("http://localhost/myapp");
-
                 var sut = new Uri("http://localhost/myapp?name=value");
 
                 var result = sut.AddOrUpdateQueryParam("name", null);
 
-                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp")));
             }
 
             [TestCase("")]
             [TestCase("value2")]
             public void WhenParamExists_AndValueIsNotNull_ThenUpdateParamValue(string value)
             {
-                var expected = new Uri($"http://localhost/myapp?name={value}");
-
                 var sut = new Uri("http://localhost/myapp?name=value");
 
                 var result = sut.AddOrUpdateQueryParam("name", value);
                 
-                Assert.That(result, Is.EqualTo(expected));                
+                Assert.That(result, Is.EqualTo(new Uri($"http://localhost/myapp?name={value}")));                
             }
 
-            [Test]
-            public void WhenParamNotExists_AndValueIsNull_ThenNotRemoveParam()
+            [TestCase("http://localhost/")]
+            [TestCase("http://localhost/?apikey=ABC123")]
+            [TestCase("http://localhost/myapp")]
+            [TestCase("http://localhost/myapp?apikey=ABC123")]
+            [TestCase("http://localhost/myapp/")]
+            [TestCase("http://localhost/myapp/?apikey=ABC123")]
+            public void WhenParamNotExists_AndValueIsNull_ThenNotRemoveParam(string uri)
             {
-                var expected = new Uri("http://localhost/myapp");
-
-                var sut = new Uri("http://localhost/myapp");
+                var sut = new Uri(uri);
 
                 var result = sut.AddOrUpdateQueryParam("name", null);
 
-                Assert.That(result, Is.EqualTo(expected));
+                Assert.That(result, Is.EqualTo(new Uri(uri)));
             }
 
             [TestCase("")]
@@ -232,6 +231,26 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 var result = sut.AddOrUpdateQueryParam("name", "John Smith");
                 
                 Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/myapp?name=John+Smith"));
+            }
+
+            [Test]
+            public void WhenHasNoQueryString_AndNoTrailingSlash_ThenAddParam()
+            {
+                var sut = new Uri("http://api.giphy.com/v1/gifs/search");
+
+                var result = sut.AddOrUpdateQueryParam("api_key", "ABC123");
+
+                Assert.That(result, Is.EqualTo(new Uri("http://api.giphy.com/v1/gifs/search?api_key=ABC123")));
+            }
+
+            [Test]
+            public void WhenHasNoQueryString_AndTrailingSlash_ThenAddParam()
+            {
+                var sut = new Uri("http://api.giphy.com/v1/gifs/search/");
+
+                var result = sut.AddOrUpdateQueryParam("api_key", "ABC123");
+
+                Assert.That(result, Is.EqualTo(new Uri("http://api.giphy.com/v1/gifs/search/?api_key=ABC123")));
             }
         }
 
