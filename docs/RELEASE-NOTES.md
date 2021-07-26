@@ -1,5 +1,18 @@
 # Release Notes
 
+## 2.2.0 - ?
+
+Breaking changes:
+- (None)
+
+New features:
+- Added `Uri.RemovePath` extension method.
+
+Bug fixes / internal changes:
+- Fix in `UriQueryConverter.ToString(NameValueCollection)` to better handle nulls and empty strings.
+- Fix in `UriQueryConverter.ToString(Dictionary)` to better handle nulls and empty strings.
+- Fix in `UriQueryConverter.ToString(IEnumerable)` to better handle nulls and empty strings.
+
 ## 2.1.1 - 24 July 2021
 
 Breaking changes:

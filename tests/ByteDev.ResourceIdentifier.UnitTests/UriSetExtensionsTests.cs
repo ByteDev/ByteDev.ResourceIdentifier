@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using NUnit.Framework;
 
 namespace ByteDev.ResourceIdentifier.UnitTests
@@ -6,6 +9,67 @@ namespace ByteDev.ResourceIdentifier.UnitTests
     [TestFixture]
     public class UriSetExtensionsTests
     {
+        [TestFixture]
+        public class SetPath
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriSetExtensions.SetPath(null, "path"));
+            }
+
+            [TestCase(null)]
+            [TestCase("")]
+            [TestCase("/")]
+            public void WhenPathIsNullOrEmptyOrSlash_ThenRemovePath(string path)
+            {
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetPath(path);
+
+                Assert.That(result, Is.EqualTo(new Uri("http://localhost/?name=value")));
+            }
+
+            [TestCase("newpath", "http://localhost/newpath")]
+            [TestCase("/newpath", "http://localhost/newpath")]
+            [TestCase("newpath/", "http://localhost/newpath/")]
+            [TestCase("/newpath/", "http://localhost/newpath/")]
+            public void WhenUriIsJustRoot_ThenSetPath(string path, string expected)
+            {
+                var sut = new Uri("http://localhost");
+
+                var result = sut.SetPath(path);
+
+                Assert.That(result, Is.EqualTo(new Uri(expected)));
+            }
+
+            [TestCase("newpath", "http://localhost/newpath?name=value")]
+            [TestCase("/newpath", "http://localhost/newpath?name=value")]
+            [TestCase("newpath/", "http://localhost/newpath/?name=value")]
+            [TestCase("/newpath/", "http://localhost/newpath/?name=value")]
+            public void WhenUriHasPath_ThenUpdatePath(string path, string expected)
+            {
+                var sut = new Uri("http://localhost/oldpath?name=value");
+
+                var result = sut.SetPath(path);
+
+                Assert.That(result, Is.EqualTo(new Uri(expected)));
+            }
+
+            [TestCase("newpath", "http://localhost/newpath?name=value")]
+            [TestCase("/newpath", "http://localhost/newpath?name=value")]
+            [TestCase("newpath/", "http://localhost/newpath/?name=value")]
+            [TestCase("/newpath/", "http://localhost/newpath/?name=value")]
+            public void WhenUriHasNoPath_ThenAddPath(string path, string expected)
+            {
+                var sut = new Uri("http://localhost/?name=value");
+
+                var result = sut.SetPath(path);
+
+                Assert.That(result, Is.EqualTo(new Uri(expected)));
+            }
+        }
+
         [TestFixture]
         public class SetQuery
         {
@@ -39,7 +103,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             }
 
             [Test]
-            public void WhenHasNoQuestionMark_ThenSetQuery()
+            public void WhenQueryHasNoQuestionMark_ThenSetQuery()
             {
                 var sut = new Uri("http://localhost/path?name=value");
 
@@ -49,7 +113,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             }
 
             [Test]
-            public void WhenHasQuestionMark_ThenSetQuery()
+            public void WhenQueryHasQuestionMark_ThenSetQuery()
             {
                 var sut = new Uri("http://localhost/path?name=value");
 
@@ -59,29 +123,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             }
 
             [Test]
-            public void WhenHashSpaces_ThenSetQuery()
-            {
-                var sut = new Uri("http://localhost/path?name=value");
-
-                var result = sut.SetQuery("name=John Smith");
-
-                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?name=John%20Smith"));
-            }
-
-            [Test]
-            public void WhenStringCollection_ThenSetQuery()
-            {
-                var names = new[] { "name1", "name2", "name3" };
-
-                var sut = new Uri("http://localhost/path?name=value");
-
-                var result = sut.SetQuery(names);
-
-                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?name1&name2&name3"));
-            }
-
-            [Test]
-            public void WhenUriAlreadyHasJustQuestionMark_ThenSetQuery()
+            public void WhenQueryHasQuestionMark_AndUriAlreadyHasQuestionMark_ThenSetQuery()
             {
                 var sut = new Uri("http://localhost/path?");
 
@@ -89,36 +131,91 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/path?age=50")));
             }
-        }
 
-        [TestFixture]
-        public class SetPath
-        {
             [Test]
-            public void WhenSourceIsNull_ThenThrowException()
-            {
-                Assert.Throws<ArgumentNullException>(() => UriSetExtensions.SetPath(null, "path"));
-            }
-
-            [TestCase(null)]
-            [TestCase("")]
-            public void WhenPathIsNullOrEmpty_ThenRemovePath(string path)
+            public void WhenQueryHasSpaces_ThenSetQuery()
             {
                 var sut = new Uri("http://localhost/path?name=value");
 
-                var result = sut.SetPath(path);
+                var result = sut.SetQuery("first name=John Smith");
 
-                Assert.That(result, Is.EqualTo(new Uri("http://localhost/?name=value")));
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?first%20name=John%20Smith"));
+            }
+        }
+
+        [TestFixture]
+        public class SetQuery_NameValueCollection : UriSetExtensionsTests
+        {
+            [Test]
+            public void WhenNameValueCollectionQueryIsNull_ThenRemoveQuery()
+            {
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetQuery(null as NameValueCollection);
+                
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path"));
             }
 
             [Test]
-            public void WhenPathValid_ThenSetPath()
+            public void WhenNameValueCollectionQueryIsEmpty_ThenRemoveQuery()
             {
-                var sut = new Uri("http://localhost/path?name=value#fragment");
+                var sut = new Uri("http://localhost/path?name=value");
 
-                var result = sut.SetPath("newpath");
+                var result = sut.SetQuery(new NameValueCollection());
+                
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path"));
+            }
 
-                Assert.That(result, Is.EqualTo(new Uri("http://localhost/newpath?name=value#fragment")));
+            [Test]
+            public void WhenNameValueCollectionQueryHasItems_ThenSetQuery()
+            {
+                var nameValues = new NameValueCollection
+                {
+                    { "name1", "value1" },
+                    { "name2", "value2" }
+                };
+                
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetQuery(nameValues);
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?name1=value1&name2=value2"));
+            }
+        }
+
+        [TestFixture]
+        public class SetQuery_Enumerable : UriSetExtensionsTests
+        {
+            [Test]
+            public void WhenEnumerableQueryIsNull_ThenRemoveQuery()
+            {
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetQuery(null as IEnumerable<string>);
+                
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path"));
+            }
+
+            [Test]
+            public void WhenEnumerableQueryIsEmpty_ThenRemoveQuery()
+            {
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetQuery(Enumerable.Empty<string>());
+                
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path"));
+            }
+
+            [Test]
+            public void WhenEnumerableQueryHasItems_ThenSetQuery()
+            {
+                var names = new[] { "name1", "name2" };
+
+                var sut = new Uri("http://localhost/path?name=value");
+
+                var result = sut.SetQuery(names);
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/path?name1&name2"));
             }
         }
 
@@ -144,7 +241,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
             [TestCase("newfrag")]
             [TestCase("#newfrag")]
-            public void WhenHasNoFragment_ThenSetFragment(string fragment)
+            public void WhenHasNoFragment_ThenAddFragment(string fragment)
             {
                 var sut = new Uri("http://localhost/path?name=value");
 
@@ -155,7 +252,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
             [TestCase("newfrag")]
             [TestCase("#newfrag")]
-            public void WhenHasFragment_ThenSetFragment(string fragment)
+            public void WhenHasFragment_ThenUpdateFragment(string fragment)
             {
                 var sut = new Uri("http://localhost/path?name=value#fragment");
 

@@ -21,7 +21,12 @@ namespace ByteDev.ResourceIdentifier
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            var uriBuilder = new UriBuilder(source) { Path = path };
+            var pathNoSlash = path.RemoveStartsWith("/");
+
+            var uriBuilder = new UriBuilder(source)
+            {
+                Path = pathNoSlash
+            };
 
             return uriBuilder.Uri;
         }

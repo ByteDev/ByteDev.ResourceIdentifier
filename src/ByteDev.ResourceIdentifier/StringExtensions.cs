@@ -26,11 +26,11 @@ namespace ByteDev.ResourceIdentifier
         {
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
-            
-            if (string.IsNullOrEmpty(source))
-                return source;
 
             if (value == string.Empty)
+                return source;
+
+            if (string.IsNullOrEmpty(source))
                 return source;
 
             if (source.StartsWith(value))

@@ -13,50 +13,70 @@ namespace ByteDev.ResourceIdentifier
     public static class UriQueryConverter
     {
         /// <summary>
-        /// Converts <paramref name="value" /> to a valid Uri path string.
+        /// Converts <paramref name="nameValues" /> to a valid Uri path string.
         /// </summary>
-        /// <param name="value">Query NameValueCollection to convert.</param>
+        /// <param name="nameValues">Query NameValueCollection to convert.</param>
         /// <returns>String representing a Uri query.</returns>
-        public static string ToString(NameValueCollection value)
+        public static string ToString(NameValueCollection nameValues)
         {
-            if (value == null || value.Count < 1)
+            if (nameValues == null || nameValues.Count < 1)
                 return string.Empty;
 
             var sb = new StringBuilder();
 
-            var items = value
-                .AllKeys
-                .SelectMany(value.GetValues, (k, v) => new { key = k, value = v });
-
-            foreach (var item in items)
+            foreach (string name in nameValues)
             {
+                if (string.IsNullOrEmpty(name))
+                    continue;
+
+                var value = nameValues[name];
+
                 sb.Append(sb.Length == 0 ? "?" : "&");
-                sb.Append(UrlEncode(item.key));
-                sb.Append("=");
-                sb.Append(UrlEncode(item.value));
+                sb.Append(UrlEncode(name));
+
+                if (value != null)
+                {
+                    sb.Append("=");
+
+                    if (value != string.Empty)
+                    {
+                        sb.Append(UrlEncode(value));
+                    }
+                }
             }
 
             return sb.ToString();
         }
 
         /// <summary>
-        /// Converts <paramref name="value" /> to a valid Uri path string.
+        /// Converts <paramref name="dictionary" /> to a valid Uri path string.
         /// </summary>
-        /// <param name="value">Query Dictionary to convert.</param>
+        /// <param name="dictionary">Query dictionary to convert.</param>
         /// <returns>String representing a Uri query.</returns>
-        public static string ToString(IDictionary<string, string> value)
+        public static string ToString(IDictionary<string, string> dictionary)
         {
-            if (value == null || value.Count < 1)
+            if (dictionary == null || dictionary.Count < 1)
                 return string.Empty;
 
             var sb = new StringBuilder();
 
-            foreach (var item in value)
+            foreach (var item in dictionary)
             {
+                if (item.Key == string.Empty)
+                    continue;
+
                 sb.Append(sb.Length == 0 ? "?" : "&");
                 sb.Append(UrlEncode(item.Key));
-                sb.Append("=");
-                sb.Append(UrlEncode(item.Value));
+
+                if (item.Value != null)
+                {
+                    sb.Append("=");
+
+                    if (item.Value != string.Empty)
+                    {
+                        sb.Append(UrlEncode(item.Value));
+                    }
+                }
             }
 
             return sb.ToString();
@@ -76,6 +96,9 @@ namespace ByteDev.ResourceIdentifier
 
             foreach (var name in names.Distinct())
             {
+                if (string.IsNullOrEmpty(name))
+                    continue;
+
                 query.Append(query.Length == 0 ? "?" : "&");
                 query.Append(UrlEncode(name));
             }
@@ -133,9 +156,9 @@ namespace ByteDev.ResourceIdentifier
 
         private static string[] ToNameValueArray(string query)
         {
-            var queryFormatted = query.RemoveQuestionMarkPrefix();
-
-            return queryFormatted.Split('&');
+            return query
+                .RemoveQuestionMarkPrefix()
+                .Split('&');
         }
 
         private static string UrlEncode(string text)

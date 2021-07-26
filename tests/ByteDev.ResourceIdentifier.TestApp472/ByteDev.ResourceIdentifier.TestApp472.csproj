@@ -50,10 +50,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ByteDev.ResourceIdentifier\ByteDev.ResourceIdentifier.csproj">
-      <Project>{4885c26c-08f7-477f-976a-8bcc86ddaf64}</Project>
-      <Name>ByteDev.ResourceIdentifier</Name>
-    </ProjectReference>
+    <PackageReference Include="ByteDev.ResourceIdentifier">
+      <Version>2.1.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

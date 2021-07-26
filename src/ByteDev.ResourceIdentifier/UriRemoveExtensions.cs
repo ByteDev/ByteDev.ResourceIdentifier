@@ -9,6 +9,19 @@ namespace ByteDev.ResourceIdentifier
     public static class UriRemoveExtensions
     {
         /// <summary>
+        /// Removes any path from the Uri.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <returns>Uri with no path.</returns>
+        public static Uri RemovePath(this Uri source)
+        {
+            if (source == null)
+                return null;
+
+            return source.SetPath(string.Empty);
+        }
+
+        /// <summary>
         /// Removes any query from the Uri.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>

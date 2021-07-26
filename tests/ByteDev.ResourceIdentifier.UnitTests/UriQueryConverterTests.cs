@@ -27,12 +27,52 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 Assert.That(result, Is.Empty);
             }
 
-            [Test]
-            public void WhenHasOnePair_ThenReturnString()
+            [TestCase(null)]
+            [TestCase("")]
+            public void WhenPairNameIsNullOrEmpty_ThenSkipPair(string name)
             {
                 var nameValues = new NameValueCollection
                 {
-                    {"key", "value"}
+                    { name, "value" }
+                };
+
+                var result = UriQueryConverter.ToString(nameValues);
+
+                Assert.That(result, Is.Empty);
+            }
+
+            [Test]
+            public void WhenHasOnePairWithNullValue_ThenReturnString()
+            {
+                var nameValues = new NameValueCollection
+                {
+                    { "key", null }
+                };
+
+                var result = UriQueryConverter.ToString(nameValues);
+
+                Assert.That(result, Is.EqualTo("?key"));
+            }
+
+            [Test]
+            public void WhenHasOnePairWithEmptyValue_ThenReturnString()
+            {
+                var nameValues = new NameValueCollection
+                {
+                    { "key", string.Empty }
+                };
+
+                var result = UriQueryConverter.ToString(nameValues);
+
+                Assert.That(result, Is.EqualTo("?key="));
+            }
+
+            [Test]
+            public void WhenHasOnePairWithValue_ThenReturnString()
+            {
+                var nameValues = new NameValueCollection
+                {
+                    { "key", "value" }
                 };
 
                 var result = UriQueryConverter.ToString(nameValues);
@@ -45,8 +85,8 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             {
                 var nameValues = new NameValueCollection
                 {
-                    {"key1", "value1"},
-                    {"key2", "value2"}
+                    { "key1", "value1" },
+                    { "key2", "value2" }
                 };
 
                 var result = UriQueryConverter.ToString(nameValues);
@@ -59,9 +99,9 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             {
                 var nameValues = new NameValueCollection
                 {
-                    {"key1", "value1"},
-                    {"key 2", "value 2"},
-                    {"key/3", "value/3"}
+                    { "key1", "value1" },
+                    { "key 2", "value 2" },
+                    { "key/3", "value/3" }
                 };
 
                 var result = UriQueryConverter.ToString(nameValues);
@@ -90,11 +130,50 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             }
 
             [Test]
+            public void WhenPairNameIsEmpty_ThenSkipPair()
+            {
+                var dict = new Dictionary<string, string>
+                {
+                    { string.Empty, "value" }
+                };
+                
+                var result = UriQueryConverter.ToString(dict);
+
+                Assert.That(result, Is.Empty);
+            }
+
+            [Test]
+            public void WhenPairValueIsNull_ThenReturnString()
+            {
+                var dict = new Dictionary<string, string>
+                {
+                    { "key1", null }
+                };
+                
+                var result = UriQueryConverter.ToString(dict);
+
+                Assert.That(result, Is.EqualTo("?key1"));
+            }
+
+            [Test]
+            public void WhenPairValueIsEmpty_ThenReturnString()
+            {
+                var dict = new Dictionary<string, string>
+                {
+                    { "key1", string.Empty }
+                };
+                
+                var result = UriQueryConverter.ToString(dict);
+
+                Assert.That(result, Is.EqualTo("?key1="));
+            }
+
+            [Test]
             public void WhenHasOnePair_ThenReturnString()
             {
                 var dict = new Dictionary<string, string>
                 {
-                    {"key1", "value1"}
+                    { "key1", "value1" }
                 };
                 
                 var result = UriQueryConverter.ToString(dict);
@@ -107,8 +186,8 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             {
                 var dict = new Dictionary<string, string>
                 {
-                    {"key1", "value1"},
-                    {"key2", "value2"}
+                    { "key1", "value1" },
+                    { "key2", "value2" }
                 };
 
                 var result = UriQueryConverter.ToString(dict);
@@ -147,6 +226,17 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             public void WhenIsEmpty_ThenReturnEmpty()
             {
                 var result = UriQueryConverter.ToString(Enumerable.Empty<string>());
+
+                Assert.That(result, Is.Empty);
+            }
+
+            [TestCase(null)]
+            [TestCase("")]
+            public void WhenHasNullOrEmptyNames_ThenSkipName(string name)
+            {
+                var names = new List<string> { name };
+
+                var result = UriQueryConverter.ToString(names);
 
                 Assert.That(result, Is.Empty);
             }
@@ -206,7 +296,16 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             }
 
             [Test]
-            public void WhenValidQueryWithoutQuestionMark_ThenReturnNameValues()
+            public void WhenHasEmptyKey_ThenUseEmptyName()
+            {
+                var result = UriQueryConverter.ToNameValueCollection("=value");
+
+                Assert.That(result.AllKeys.Length, Is.EqualTo(1));
+                Assert.That(result[string.Empty], Is.EqualTo("value"));
+            }
+
+            [Test]
+            public void WhenNoQuestionMark_ThenReturnNameValues()
             {
                 var result = UriQueryConverter.ToNameValueCollection("key1=value1&key2=value2");
 
@@ -216,7 +315,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
             }
 
             [Test]
-            public void WhenValidQueryWithQuestionMark_ThenReturnNameValues()
+            public void WhenWithQuestionMark_ThenReturnNameValues()
             {
                 var result = UriQueryConverter.ToNameValueCollection("?key1=value1&key2=value2");
 
@@ -268,6 +367,15 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 var result = UriQueryConverter.ToDictionary(query);
 
                 Assert.That(result, Is.Empty);
+            }
+
+            [Test]
+            public void WhenHasEmptyKey_ThenUseEmptyName()
+            {
+                var result = UriQueryConverter.ToDictionary("=value");
+
+                Assert.That(result.Keys.Count, Is.EqualTo(1));
+                Assert.That(result[string.Empty], Is.EqualTo("value"));
             }
             
             [Test]
