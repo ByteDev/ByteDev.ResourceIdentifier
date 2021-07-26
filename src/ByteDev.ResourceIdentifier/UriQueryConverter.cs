@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Web;
+using ByteDev.Strings;
 
 namespace ByteDev.ResourceIdentifier
 {
@@ -157,7 +158,7 @@ namespace ByteDev.ResourceIdentifier
         private static string[] ToNameValueArray(string query)
         {
             return query
-                .RemoveQuestionMarkPrefix()
+                .RemoveStartsWith("?")
                 .Split('&');
         }
 

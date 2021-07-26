@@ -1,6 +1,6 @@
 # Release Notes
 
-## 2.2.0 - ?
+## 2.2.0 - 26 July 2021
 
 Breaking changes:
 - (None)
@@ -12,6 +12,7 @@ Bug fixes / internal changes:
 - Fix in `UriQueryConverter.ToString(NameValueCollection)` to better handle nulls and empty strings.
 - Fix in `UriQueryConverter.ToString(Dictionary)` to better handle nulls and empty strings.
 - Fix in `UriQueryConverter.ToString(IEnumerable)` to better handle nulls and empty strings.
+- Added package dependency `ByteDev.Strings`.
 
 ## 2.1.1 - 24 July 2021
 

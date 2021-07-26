@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using ByteDev.Strings;
 
 namespace ByteDev.ResourceIdentifier
 {
