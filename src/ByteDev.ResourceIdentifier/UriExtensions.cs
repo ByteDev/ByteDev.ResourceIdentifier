@@ -43,31 +43,31 @@ namespace ByteDev.ResourceIdentifier
         /// name value collection. If a value is null the param is removed.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
-        /// <param name="newNameValues">New name value collection.</param>
+        /// <param name="nameValues">Collection of name value pairs.</param>
         /// <returns>A new Uri instance with the added or modified query string parameters.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="newNameValues" /> is null.</exception>
-        public static Uri AddOrUpdateQueryParams(this Uri source, NameValueCollection newNameValues)
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="nameValues" /> is null.</exception>
+        public static Uri AddOrUpdateQueryParams(this Uri source, NameValueCollection nameValues)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            if (newNameValues == null)
-                throw new ArgumentNullException(nameof(newNameValues));
+            if (nameValues == null)
+                throw new ArgumentNullException(nameof(nameValues));
 
-            var nameValues = UriQueryConverter.ToNameValueCollection(source.Query);
+            var existingPairs = UriQueryConverter.ToNameValueCollection(source.Query);
 
-            foreach (string key in newNameValues)
+            foreach (string key in nameValues)
             {
-                var newValue = newNameValues[key];
+                var newValue = nameValues[key];
 
                 if (newValue == null)
-                    nameValues.Remove(key);
+                    existingPairs.Remove(key);
                 else
-                    nameValues.AddOrUpdate(key, newValue);
+                    existingPairs.AddOrUpdate(key, newValue);
             }
-
-            return source.SetQuery(nameValues);
+            
+            return source.SetQuery(existingPairs);
         }
 
         /// <summary>
@@ -75,31 +75,31 @@ namespace ByteDev.ResourceIdentifier
         /// name value dictionary. If a value is null the param is removed.
         /// </summary>
         /// <param name="source">Uri to perform the operation on.</param>
-        /// <param name="newNameValues">New name value dictionary.</param>
+        /// <param name="nameValues">Dictionary of name value pairs.</param>
         /// <returns>A new Uri instance with the added or modified query string parameters.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="newNameValues" /> is null.</exception>
-        public static Uri AddOrUpdateQueryParams(this Uri source, IDictionary<string, string> newNameValues)
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="nameValues" /> is null.</exception>
+        public static Uri AddOrUpdateQueryParams(this Uri source, IDictionary<string, string> nameValues)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            if (newNameValues == null)
-                throw new ArgumentNullException(nameof(newNameValues));
+            if (nameValues == null)
+                throw new ArgumentNullException(nameof(nameValues));
 
-            var nameValues = UriQueryConverter.ToNameValueCollection(source.Query);
+            var existingPairs = UriQueryConverter.ToNameValueCollection(source.Query);
 
-            foreach (string key in newNameValues.Keys)
+            foreach (string key in nameValues.Keys)
             {
-                var newValue = newNameValues[key];
+                var newValue = nameValues[key];
 
                 if (newValue == null)
-                    nameValues.Remove(key);
+                    existingPairs.Remove(key);
                 else
-                    nameValues.AddOrUpdate(key, newValue);
+                    existingPairs.AddOrUpdate(key, newValue);
             }
 
-            return source.SetQuery(nameValues);
+            return source.SetQuery(existingPairs);
         }
         
         /// <summary>
