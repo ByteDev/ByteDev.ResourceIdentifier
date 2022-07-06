@@ -9,7 +9,7 @@ New features:
 - (None)
 
 Bug fixes / internal changes:
-- Updated `ByteDev.Strings` dependency to version `9.5.0`.
+- Updated `ByteDev.Strings` dependency to version `11.0.0`.
 
 ## 2.2.0 - 26 July 2021
 
