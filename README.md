@@ -100,5 +100,10 @@ string slug = new UriSlugBuilder()
                 .WithDateTimeSuffix(new DateTime(2022, 6, 1))
                 .Build();
 
-// slug == "my-first-blog-post-MjAyMjA2MDExMjAwMDA"         
+// slug == "my-first-blog-post-MjAyMjA2MDExMjAwMDA"
+
+var uri = new Uri("http://localhost/myblog")
+                .AppendPath(slug);
+
+// uri == new Uri("http://localhost/myblog/my-first-blog-post-MjAyMjA2MDExMjAwMDA")
 ```

@@ -10,9 +10,7 @@ namespace ByteDev.ResourceIdentifier
     /// </summary>
     public static class UriSetExtensions
     {
-        private const int SchemeDefaultPort = -1;
-        private const int MinPortNumber = 0;
-        private const int MaxPortNumber = 65535;
+        private const int SchemeDefaultPort = -1; // Forces UriBuilder to use the default port for the scheme
 
         /// <summary>
         /// Returns a new Uri instance with the scheme set.
@@ -52,8 +50,8 @@ namespace ByteDev.ResourceIdentifier
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            if (port < MinPortNumber || port > MaxPortNumber)
-                throw new ArgumentOutOfRangeException(nameof(port), port, $"Port must be between {MinPortNumber} and {MaxPortNumber}.");
+            if (!Tcp.IsPortValid(port))
+                throw new ArgumentOutOfRangeException(nameof(port), port, $"Port must be between {Tcp.MinPort} and {Tcp.MaxPort}.");
 
             var builder = new UriBuilder(source)
             {
@@ -62,7 +60,7 @@ namespace ByteDev.ResourceIdentifier
 
             return builder.Uri;
         }
-
+        
         /// <summary>
         /// Returns a new Uri instance with the port set to the scheme's default.
         /// For example for HTTP the port would be set to 80.

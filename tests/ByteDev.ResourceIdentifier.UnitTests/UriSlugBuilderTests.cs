@@ -96,8 +96,6 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
             StringAssert.StartsWith("my-first-blog-post-", result);
             Assert.That(result.Length, Is.GreaterThan("my-first-blog-post-".Length));
-
-            Console.WriteLine(result);
         }
 
         [Test]
@@ -112,8 +110,6 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
             StringAssert.StartsWith("my-first-blog-post-", result);
             Assert.That(result.Length, Is.GreaterThan("my-first-blog-post-".Length + length));
-
-            Console.WriteLine(result);
         }
 
         [TestCase(-1)]
