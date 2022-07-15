@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
+using ByteDev.Collections;
 using ByteDev.Strings;
 using NUnit.Framework;
 
@@ -339,6 +341,55 @@ namespace ByteDev.ResourceIdentifier.UnitTests
 
                 Assert.That(result, Is.EqualTo(new Uri("http://localhost/myapp?q1=1&q2=3&q3=10")));
                 Assert.That(result, Is.Not.SameAs(sut));
+            }
+        }
+
+        [TestFixture]
+        public class GetPathSegments : UriExtensionsTests
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.GetPathSegments(null));
+            }
+
+            [TestCase("http://localhost")]
+            [TestCase("http://localhost/")]
+            public void WhenUriHasNoPath_ThenReturnEmpty(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.GetPathSegments();
+
+                Assert.That(result, Is.Empty);
+            }
+
+            [TestCase("http://localhost/path1")]
+            [TestCase("http://localhost/path1/")]
+            [TestCase("http://localhost/path1?name=John")]
+            [TestCase("http://localhost/path1/?name=John")]
+            public void WhenUriHasOnePathSegment_ThenReturnSegment(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.GetPathSegments();
+
+                Assert.That(result.Single(), Is.EqualTo("path1"));
+            }
+
+            [TestCase("http://localhost/path1/path2")]
+            [TestCase("http://localhost/path1/path2/")]
+            [TestCase("http://localhost/path1/path2?name=John")]
+            [TestCase("http://localhost/path1/path2/?name=John")]
+            public void WhenUriHasTwoPathSegments_ThenReturnSegments(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.GetPathSegments();
+
+                Assert.That(result.Count(), Is.EqualTo(2));
+                Assert.That(result.First(), Is.EqualTo("path1"));
+                Assert.That(result.Second(), Is.EqualTo("path2"));
             }
         }
     }

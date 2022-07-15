@@ -29,6 +29,7 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 - AddOrUpdateQueryParam
 - AddOrUpdateQueryParams
 - AppendPath
+- GetPathSegments
 - HasPath
 - HasQuery
 - HasFragment

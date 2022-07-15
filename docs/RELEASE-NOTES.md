@@ -7,6 +7,7 @@ Breaking changes:
 
 New features:
 - Added `UriSlugBuilder` class.
+- Added `UriExtensions.GetPathSegments` method.
 
 Bug fixes / internal changes:
 - Updated `ByteDev.Strings` dependency to version `11.0.0`.

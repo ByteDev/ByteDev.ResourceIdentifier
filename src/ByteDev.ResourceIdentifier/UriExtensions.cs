@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using ByteDev.Strings;
 
@@ -157,6 +158,24 @@ namespace ByteDev.ResourceIdentifier
             }
 
             return AppendPath(source, sb.ToString());
+        }
+
+        /// <summary>
+        /// Returns each path segment as an element in a sequence.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <returns>Path segments as a sequence.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static IEnumerable<string> GetPathSegments(this Uri source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            var segments = source.AbsolutePath
+                .Split('/')
+                .Where(p => p != string.Empty);
+            
+            return segments;
         }
     }
 }
