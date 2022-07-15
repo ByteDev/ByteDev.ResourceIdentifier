@@ -1,4 +1,5 @@
 ﻿using System;
+using ByteDev.Strings;
 
 namespace ByteDev.ResourceIdentifier
 {
