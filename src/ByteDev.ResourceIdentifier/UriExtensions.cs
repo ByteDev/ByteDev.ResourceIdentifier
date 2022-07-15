@@ -177,5 +177,22 @@ namespace ByteDev.ResourceIdentifier
             
             return segments;
         }
+
+        /// <summary>
+        /// Returns the root of the URI. URI root is defined as: "{scheme}://{host}:{port}"
+        /// (if the port is the default value for the scheme then it is omitted).
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <returns>URI root.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static string GetRoot(this Uri source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            
+            return source.IsDefaultPort ? 
+                $"{source.Scheme}://{source.Host}" : 
+                $"{source.Scheme}://{source.Host}:{source.Port}";
+        }
     }
 }

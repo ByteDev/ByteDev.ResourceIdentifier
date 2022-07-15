@@ -97,7 +97,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [TestFixture]
-        public class AppendPath_Segments : UriExtensionsTests
+        public class AppendPath_Segments
         {
             [Test]
             public void WhenSourceIsNull_ThenThrowException()
@@ -345,7 +345,7 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [TestFixture]
-        public class GetPathSegments : UriExtensionsTests
+        public class GetPathSegments
         {
             [Test]
             public void WhenSourceIsNull_ThenThrowException()
@@ -390,6 +390,73 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 Assert.That(result.Count(), Is.EqualTo(2));
                 Assert.That(result.First(), Is.EqualTo("path1"));
                 Assert.That(result.Second(), Is.EqualTo("path2"));
+            }
+        }
+
+        [TestFixture]
+        public class GetRoot
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriExtensions.GetRoot(null));
+            }
+
+            [TestCase("http://something.com/")]
+            [TestCase("http://something.com/path1")]
+            [TestCase("http://something.com/path1/")]
+            [TestCase("http://something.com/path1/path2")]
+            [TestCase("http://something.com/path1/path2/")]
+            [TestCase("http://something.com/path1/path2?name=John")]
+            public void WhenHasNoPort_ThenReturnRoot(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.GetRoot();
+
+                Assert.That(result, Is.EqualTo("http://something.com"));
+            }
+
+            [Test]
+            public void WhenIsHttp_AndHasNonDefaultPort_ThenReturnRootWithPort()
+            {
+                var sut = new Uri("http://something.com:8080/path1");
+
+                var result = sut.GetRoot();
+
+                Assert.That(result, Is.EqualTo("http://something.com:8080"));
+            }
+
+            [Test]
+            public void WhenIsHttps_AndHasNonDefaultPort_ThenReturnRootWithPort()
+            {
+                var sut = new Uri("https://something.com:8080/path1");
+
+                var result = sut.GetRoot();
+
+                Assert.That(result, Is.EqualTo("https://something.com:8080"));
+            }
+
+            [TestCase("http://something.com/path1")]
+            [TestCase("http://something.com:80/path1")]
+            public void WhenIsHttp_AndDefaultPort_ThenReturnRootWithoutPort(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.GetRoot();
+
+                Assert.That(result, Is.EqualTo("http://something.com"));
+            }
+
+            [TestCase("https://something.com/path1")]
+            [TestCase("https://something.com:443/path1")]
+            public void WhenIsHttps_AndDefaultPort_ThenReturnRootWithoutPort(string uri)
+            {
+                var sut = new Uri(uri);
+
+                var result = sut.GetRoot();
+
+                Assert.That(result, Is.EqualTo("https://something.com"));
             }
         }
     }
