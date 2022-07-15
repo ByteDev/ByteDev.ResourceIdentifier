@@ -80,3 +80,20 @@ var query = UriQueryConverter.ToString(nameValues);
 
 // query == "?key1=value1&key2=value2"
 ```
+
+---
+
+### UriSlugBuilder
+
+The `UriSlugBuilder` class can be used to create *slugs* for use in URI paths.
+
+Example:
+
+```csharp
+string slug = new UriSlugBuilder()
+                .WithText("My First Blog Post")
+                .WithDateTimeSuffix(new DateTime(2022, 6, 1))
+                .Build();
+
+// slug == "my-first-blog-post-MjAyMjA2MDExMjAwMDA"         
+```
