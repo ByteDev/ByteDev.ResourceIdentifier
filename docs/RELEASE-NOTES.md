@@ -1,12 +1,12 @@
 # Release Notes
 
-## 2.2.1 - ?
+## 2.3.0 - ?
 
 Breaking changes:
 - (None)
 
 New features:
-- (None)
+- Added `UriSlugBuilder` class.
 
 Bug fixes / internal changes:
 - Updated `ByteDev.Strings` dependency to version `11.0.0`.

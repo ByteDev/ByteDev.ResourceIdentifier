@@ -13,7 +13,13 @@ namespace ByteDev.ResourceIdentifier
 
         public UriSlugBuilder WithText(string text)
         {
-            _text = text;
+            _text = text ?? string.Empty;
+            return this;
+        }
+
+        public UriSlugBuilder WithText(string text, int maxLength)
+        {
+            _text = text.SafeSubstring(0, maxLength);
             return this;
         }
 

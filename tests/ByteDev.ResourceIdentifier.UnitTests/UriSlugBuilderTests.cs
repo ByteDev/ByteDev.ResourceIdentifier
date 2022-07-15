@@ -23,6 +23,14 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [Test]
+        public void WhenTextSetToNull_ThenReturnEmpty()
+        {
+            var result = _sut.WithText(null).Build();
+
+            Assert.That(result, Is.Empty);
+        }
+
+        [Test]
         public void WhenTextSet_ThenReplaceSpacesAndToLower()
         {
             var result = _sut
@@ -50,6 +58,21 @@ namespace ByteDev.ResourceIdentifier.UnitTests
                 .Build();
 
             Assert.That(result, Is.EqualTo("my-first-blog-post"));
+        }
+
+        [TestCase(-1, "")]
+        [TestCase(0, "")]
+        [TestCase(1, "m")]
+        [TestCase(10, "my-first-b")]
+        [TestCase(18, "my-first-blog-post")]
+        [TestCase(19, "my-first-blog-post")]
+        public void WhenTextMaxLengthSet_ThenReturnTruncated(int maxLength, string expected)
+        {
+            var result = _sut
+                .WithText("My First Blog Post", maxLength)
+                .Build();
+
+            Assert.That(result, Is.EqualTo(expected));
         }
 
         [Test]
