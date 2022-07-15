@@ -49,6 +49,67 @@ namespace ByteDev.ResourceIdentifier.UnitTests
         }
 
         [TestFixture]
+        public class SetPort
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriSetExtensions.SetPort(null, 8080));
+            }
+
+            [TestCase(-1)]
+            [TestCase(65536)]
+            public void WhenPortIsOutOfRange_ThenThrowException(int port)
+            {
+                var sut = new Uri("http://localhost/");
+
+                Assert.Throws<ArgumentOutOfRangeException>(() => sut.SetPort(port));
+            }
+            
+            [TestCase(0)]
+            [TestCase(8080)]
+            [TestCase(65535)]
+            public void WhenPortIsNotDefault_ThenSetPort(int port)
+            {
+                var sut = new Uri("http://localhost/");
+
+                var result = sut.SetPort(port);
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo($"http://localhost:{port}/"));
+            }
+
+            [Test]
+            public void WhenPortIsDefault_ThenPortDoesNotChange()
+            {
+                var sut = new Uri("http://localhost/");
+
+                var result = sut.SetPort(80);
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/"));
+            }
+        }
+
+        [TestFixture]
+        public class SetPortDefault
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriSetExtensions.SetPortDefault(null));
+            }
+
+            [Test]
+            public void WhenPortIsNotDefault_ThenSetDefaultPort()
+            {
+                var sut = new Uri("http://localhost:8080/");
+
+                var result = sut.SetPortDefault();
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo("http://localhost/"));
+            }
+        }
+
+        [TestFixture]
         public class SetPath
         {
             [Test]

@@ -11,6 +11,8 @@ namespace ByteDev.ResourceIdentifier
     public static class UriSetExtensions
     {
         private const int SchemeDefaultPort = -1;
+        private const int MinPortNumber = 0;
+        private const int MaxPortNumber = 65535;
 
         /// <summary>
         /// Returns a new Uri instance with the scheme set.
@@ -32,6 +34,50 @@ namespace ByteDev.ResourceIdentifier
             {
                 Scheme = scheme,
                 Port = source.IsDefaultPort ? SchemeDefaultPort : source.Port
+            };
+            
+            return builder.Uri;
+        }
+
+        /// <summary>
+        /// Returns a new Uri instance with port set.
+        /// </summary>
+        /// <param name="source">Uri  to perform the operation on.</param>
+        /// <param name="port">Port number to set.</param>
+        /// <returns>New Uri instance with the port set.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="port" /> must be between 0 and 65535.</exception>
+        public static Uri SetPort(this Uri source, int port)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (port < MinPortNumber || port > MaxPortNumber)
+                throw new ArgumentOutOfRangeException(nameof(port), port, $"Port must be between {MinPortNumber} and {MaxPortNumber}.");
+
+            var builder = new UriBuilder(source)
+            {
+                Port = port
+            };
+
+            return builder.Uri;
+        }
+
+        /// <summary>
+        /// Returns a new Uri instance with the port set to the scheme's default.
+        /// For example for HTTP the port would be set to 80.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <returns>New Uri instance with the port set.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        public static Uri SetPortDefault(this Uri source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            var builder = new UriBuilder(source)
+            {
+                Port = SchemeDefaultPort
             };
 
             return builder.Uri;

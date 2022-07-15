@@ -1,6 +1,6 @@
 # Release Notes
 
-## 2.3.0 - ?
+## 2.3.0 - 15 July 2022
 
 Breaking changes:
 - (None)
@@ -10,6 +10,8 @@ New features:
 - Added `UriExtensions.GetPathSegments` method.
 - Added `UriExtensions.GetRoot` method.
 - Added `UriExtensions.SetScheme` method.
+- Added `UriExtensions.SetPort` method.
+- Added `UriExtensions.SetPortDefault` method.
 
 Bug fixes / internal changes:
 - Updated `ByteDev.Strings` dependency to version `11.0.0`.

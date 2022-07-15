@@ -43,6 +43,8 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 - RemoveQueryParams
 - SetFragment
 - SetPath
+- SetPort
+- SetPortDefault
 - SetQuery
 - SetScheme
 
