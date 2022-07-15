@@ -31,9 +31,9 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 - AppendPath
 - GetPathSegments
 - GetRoot
+- HasFragment
 - HasPath
 - HasQuery
-- HasFragment
 - QueryToDictionary
 - QueryToNameValueCollection
 - RemoveFragment
@@ -41,9 +41,10 @@ Full details of the release notes can be viewed on [GitHub](https://github.com/B
 - RemoveQuery
 - RemoveQueryParam
 - RemoveQueryParams
+- SetFragment
 - SetPath
 - SetQuery
-- SetFragment
+- SetScheme
 
 Example:
 

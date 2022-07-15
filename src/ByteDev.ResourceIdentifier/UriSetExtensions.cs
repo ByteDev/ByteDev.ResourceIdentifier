@@ -10,6 +10,33 @@ namespace ByteDev.ResourceIdentifier
     /// </summary>
     public static class UriSetExtensions
     {
+        private const int SchemeDefaultPort = -1;
+
+        /// <summary>
+        /// Returns a new Uri instance with the scheme set.
+        /// </summary>
+        /// <param name="source">Uri to perform the operation on.</param>
+        /// <param name="scheme">Scheme value to set.</param>
+        /// <returns>New Uri instance with scheme set.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> is null.</exception>
+        /// <exception cref="T:System.ArgumentException"><paramref name="scheme" /> is null or empty.</exception>
+        public static Uri SetScheme(this Uri source, string scheme)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            if (string.IsNullOrEmpty(scheme))
+                throw new ArgumentException("Scheme was null or empty.", nameof(scheme));
+
+            var builder = new UriBuilder(source)
+            {
+                Scheme = scheme,
+                Port = source.IsDefaultPort ? SchemeDefaultPort : source.Port
+            };
+
+            return builder.Uri;
+        }
+        
         /// <summary>
         /// Returns a new Uri with the path set.
         /// </summary>

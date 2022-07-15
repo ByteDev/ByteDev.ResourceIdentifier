@@ -10,6 +10,45 @@ namespace ByteDev.ResourceIdentifier.UnitTests
     public class UriSetExtensionsTests
     {
         [TestFixture]
+        public class SetScheme
+        {
+            [Test]
+            public void WhenSourceIsNull_ThenThrowException()
+            {
+                Assert.Throws<ArgumentNullException>(() => UriSetExtensions.SetScheme(null, "https"));
+            }
+
+            [TestCase(null)]
+            [TestCase("")]
+            public void WhenSchemeIsNullOrEmpty_ThenThrowException(string scheme)
+            {
+                var sut = new Uri("http://localhost/");
+
+                Assert.Throws<ArgumentException>(() => sut.SetScheme(scheme));
+            }
+
+            [Test]
+            public void WhenSchemeIsValid_AndPortNotSet_ThenSetScheme()
+            {
+                var sut = new Uri("http://localhost/");
+
+                var result = sut.SetScheme(Uri.UriSchemeHttps);
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo("https://localhost/"));
+            }
+
+            [Test]
+            public void WhenSchemeIsValid_AndPortSet_ThenSetScheme()
+            {
+                var sut = new Uri("http://localhost:8080/");
+
+                var result = sut.SetScheme(Uri.UriSchemeHttps);
+
+                Assert.That(result.AbsoluteUri, Is.EqualTo("https://localhost:8080/"));
+            }
+        }
+
+        [TestFixture]
         public class SetPath
         {
             [Test]

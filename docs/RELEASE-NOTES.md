@@ -9,6 +9,7 @@ New features:
 - Added `UriSlugBuilder` class.
 - Added `UriExtensions.GetPathSegments` method.
 - Added `UriExtensions.GetRoot` method.
+- Added `UriExtensions.SetScheme` method.
 
 Bug fixes / internal changes:
 - Updated `ByteDev.Strings` dependency to version `11.0.0`.
